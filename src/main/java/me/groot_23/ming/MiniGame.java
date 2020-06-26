@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
@@ -16,9 +17,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import de.tr7zw.changeme.nbtapi.NBTEntity;
 import me.groot_23.ming.config.Utf8Config;
 import me.groot_23.ming.game.GameState;
+import me.groot_23.ming.gui.GuiCloseRunnable;
 import me.groot_23.ming.gui.GuiItem;
 import me.groot_23.ming.gui.GuiRunnable;
 import me.groot_23.ming.kits.Kit;
@@ -29,12 +30,12 @@ import me.groot_23.ming.world.ArenaProvider;
 
 public abstract class MiniGame {
 	
-	private JavaPlugin plugin;
-	private ArenaProvider arenaProvider;
-	private LanguageManager lang;
+	protected JavaPlugin plugin;
+	protected ArenaProvider arenaProvider;
+	protected LanguageManager lang;
 	
-	private Map<String, Kit> kitsByName;
-	private List<Kit> kitsByIndex;
+	protected Map<String, Kit> kitsByName;
+	protected List<Kit> kitsByIndex;
 	
 	private Map<String, GuiRunnable> guiRunnables;
 	
@@ -78,6 +79,7 @@ public abstract class MiniGame {
 	 */
 	public void registerGuiRunnables() {
 		registerGuiRunnable("ming_kit_selector", new KitGuiRunnable());
+		registerGuiRunnable("ming_gui_close", new GuiCloseRunnable());
 	}
 	public final void registerGuiRunnable(String name, GuiRunnable runnable) {
 		guiRunnables.put(name, runnable);
@@ -102,8 +104,15 @@ public abstract class MiniGame {
 	public GuiItem createGuiItem(Material material, String name, List<String> lore) {
 		return new GuiItem(getName(), material, name, lore);
 	}
+	public GuiItem createGuiItem(Material material) {
+		return new GuiItem(getName(), material);
+	}
 	
 	public abstract GameState<?> getStartingState(Arena arena);
+	
+	public Arena createArena(World world, String map) {
+		return new Arena(this, world, map);
+	}
 	
 	public JavaPlugin getPlugin() {
 		return plugin;
@@ -157,7 +166,7 @@ public abstract class MiniGame {
 	public boolean kitExists(String name) {
 		return kitsByName.containsKey(name);
 	}
-	public void applyKitToPlayer(Player player) {
+	public Kit getKit(Player player) {
 		Kit kit = null;
 		if(player.hasMetadata("ming_kit")) {
 			kit = kitsByName.get(player.getMetadata("ming_kit").get(0).asString());
@@ -165,6 +174,10 @@ public abstract class MiniGame {
 		if(kit == null) {
 			kit = getDefaultKit();
 		}
+		return kit;
+	}
+	public void applyKitToPlayer(Player player) {
+		Kit kit = getKit(player);
 		kit.applyToPlayer(player);
 	}
 

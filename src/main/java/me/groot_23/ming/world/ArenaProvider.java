@@ -105,7 +105,7 @@ public class ArenaProvider {
 				if (Bukkit.getWorld(worldName) == null) {
 					World world = Bukkit.createWorld(getWorldCreator(worldName));
 					if(world != null) {
-						currentArena = new Arena(game, world, currentMap);
+						currentArena = game.createArena(world, currentMap);
 					} else {
 						System.out.println("[MinG] World " + worldName + " COULD NOT BE LOADED");
 					}
@@ -116,7 +116,7 @@ public class ArenaProvider {
 				World world = Bukkit.createWorld(getWorldCreator(worldName));
 				// maybe no new world could be loaded for some reason -> prevent endless loop
 				if(world != null) {
-					currentArena = new Arena(game, world, currentMap);
+					currentArena = game.createArena(world, currentMap);
 				} else {
 					return false;
 				}

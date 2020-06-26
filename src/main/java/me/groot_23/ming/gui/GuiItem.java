@@ -20,6 +20,15 @@ public class GuiItem {
 	public ItemStack getItem() {
 		return item;
 	}
+	
+	public GuiItem(String minigame, Material material) {
+		item = new ItemStack(material);
+		// set nbt (item should not be movable)
+		NBTItem nbt = new NBTItem(item);
+		nbt.setBoolean("isGuiItem", true);
+		nbt.setString("miniGame", minigame);
+		item = nbt.getItem();
+	}
 
 	public GuiItem(String minigame, Material material, String name, List<String> lore) {
 		item = new ItemStack(material);

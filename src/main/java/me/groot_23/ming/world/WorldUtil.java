@@ -44,6 +44,7 @@ public class WorldUtil {
 		if(worldExists(src)) {
 			try {
 				FileUtils.copyDirectory(getWorldFolder(src), getWorldFolder(dst));
+				new File(getWorldFolder(dst), "uid.dat").delete();
 			} catch (IOException e) {
 				System.err.println("[MinG] ERROR: unable to copy world from '" + src + "' to " + dst);
 				e.printStackTrace();

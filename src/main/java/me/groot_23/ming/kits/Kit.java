@@ -22,6 +22,11 @@ public class Kit {
 	private String name;
 	private Material material;
 	
+	public static String getSelectedSuffix(Player player, MiniGame game) {
+		return ChatColor.RESET + "    " + ChatColor.GRAY + "(" + ChatColor.GREEN
+				+ game.getTranslation(player, "kit.selected") + ChatColor.GRAY + ")";
+	}
+	
 	public Kit(MiniGame game, String name, Material material, List<KitItem> items) {
 		this.game = game;
 		this.name = name;
@@ -34,12 +39,19 @@ public class Kit {
 	}
 	
 	public String getDisplayName(Player player) {
+
 		return game.getTranslation(player, "kits." + name + ".name");
+	}
+	
+	public String getSuffixedDisplayName(Player player) {
+		String selected = game.getKit(player).getName();
+		String suffix = selected.equals(name) ? getSelectedSuffix(player, game) : "";
+		return getDisplayName(player) + suffix;
 	}
 	
 	public ItemStack getDisplayItem(Player player) {
 		
-		String displayName = getDisplayName(player);
+		String displayName = getSuffixedDisplayName(player);
 		List<String> lore = initLore(player);
 		GuiItem item = game.createGuiItem(material, displayName, lore);
 		item.addActionClickRunnable("ming_kit_selector");
