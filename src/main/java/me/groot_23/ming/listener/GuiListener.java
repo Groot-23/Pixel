@@ -11,7 +11,7 @@ import org.bukkit.inventory.ItemStack;
 
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import de.tr7zw.changeme.nbtapi.NBTList;
-import me.groot_23.ming.MinGapi;
+import me.groot_23.ming.MinG;
 import me.groot_23.ming.gui.GuiItem.UseAction;
 
 public class GuiListener implements Listener {
@@ -34,7 +34,7 @@ public class GuiListener implements Listener {
 			String game = nbt.getString("miniGame");
 			for (String cmd : cmds) {
 				Player player = (Player) event.getWhoClicked();
-				MinGapi.guiExecute(game, cmd, player, event.getCurrentItem(), event.getInventory());
+				MinG.guiExecute(game, cmd, player, event.getCurrentItem(), event.getInventory());
 			}
 		}
 	}
@@ -67,7 +67,7 @@ public class GuiListener implements Listener {
 				String game = nbt.getString("miniGame");
 				for (String cmd : cmds) {
 					Player player = event.getPlayer();
-					MinGapi.guiExecute(game, cmd, player, event.getItem(), null);
+					MinG.guiExecute(game, cmd, player, event.getItem(), null);
 				}
 			}
 		}

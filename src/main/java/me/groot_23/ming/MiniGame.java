@@ -12,9 +12,11 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.groot_23.ming.config.Utf8Config;
@@ -52,7 +54,7 @@ public abstract class MiniGame {
 		guiRunnables = new HashMap<String, GuiRunnable>();
 		registerGuiRunnables();
 		
-		MinGapi.registerMiniGame(this);
+		MinG.registerMiniGame(this);
 		
 		kitsByName = new HashMap<String, Kit>();
 		kitsByIndex = new ArrayList<Kit>();
@@ -127,9 +129,8 @@ public abstract class MiniGame {
 	public abstract String getName();
 	
 	public void initKits() {
-		Utf8Config cfg = new Utf8Config();
-		try {
-			cfg.load(new File(plugin.getDataFolder(), "kits.yml"));
+		Utf8Config cfg = getKitConfig();
+		if(cfg != null) {
 			for(String key : cfg.getKeys(false)) {
 				ConfigurationSection kitSec = cfg.getConfigurationSection(key);
 				if(kitSec != null) {
@@ -138,6 +139,16 @@ public abstract class MiniGame {
 					kitsByIndex.add(kit);
 				}
 			}
+		}
+	}
+	public File getKitFile() {
+		return new File(plugin.getDataFolder(), "kits.yml");
+	}
+	public Utf8Config getKitConfig() {
+		Utf8Config cfg = new Utf8Config();
+		try {
+			cfg.load(getKitFile());
+			return cfg;
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -148,7 +159,7 @@ public abstract class MiniGame {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		return null;
 	}
 	
 	public List<Kit> getKits() {
@@ -168,8 +179,9 @@ public abstract class MiniGame {
 	}
 	public Kit getKit(Player player) {
 		Kit kit = null;
-		if(player.hasMetadata("ming_kit")) {
-			kit = kitsByName.get(player.getMetadata("ming_kit").get(0).asString());
+		List<MetadataValue> kitMeta = player.getMetadata("ming_kit");
+		if (kitMeta != null && kitMeta.size() > 0) {
+			kit = kitsByName.get(kitMeta.get(0).asString());
 		}
 		if(kit == null) {
 			kit = getDefaultKit();

@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import me.groot_23.ming.MiniGame;
+import me.groot_23.ming.config.ItemSerializer;
 import me.groot_23.ming.gui.GuiItem;
 
 
@@ -105,5 +106,16 @@ public class Kit {
 		
 		return new Kit(game, section.getName(), material, kitItems);
 		
+	}
+	
+	public static void serializeInventory(Player player, ConfigurationSection section) {
+		for(int i = 0; i < player.getInventory().getSize(); i++) {
+			ItemStack item = player.getInventory().getItem(i);
+			if(item != null) {
+				ConfigurationSection itemSec = section.createSection("item_" + i);
+				itemSec.set("slot", i);
+				ItemSerializer.serialize(item, itemSec);
+			}
+		}
 	}
 }

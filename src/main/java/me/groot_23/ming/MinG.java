@@ -8,10 +8,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
-
+import org.bukkit.potion.PotionEffect;
+import me.groot_23.ming.display.BossBarManager;
 import me.groot_23.ming.listener.GuiListener;
 
-public class MinGapi {
+public class MinG {
 	
 	private static Map<String, MiniGame> miniGames;
 	
@@ -19,10 +20,6 @@ public class MinGapi {
 	
 	static {
 		miniGames = new HashMap<String, MiniGame>();
-	}
-	
-	public static void test(Player player) {
-		player.sendMessage("Hello from MinG. This is another test!. 33333333");
 	}
 	
 	private static void registerListeners(JavaPlugin plugin) {
@@ -54,6 +51,20 @@ public class MinGapi {
 			System.out.println("[MinG] This may happen when multiple minigames use their own copy of this api");
 			System.out.println("[MinG] Don't worry about this if everything works in game");
 		}
+	}
+	
+	
+	public static void resetPlayer(Player player) {
+		player.getInventory().clear();
+		for(PotionEffect effect : player.getActivePotionEffects()) {
+			player.removePotionEffect(effect.getType());
+		}
+		player.setHealth(20);
+		player.setFoodLevel(20);
+		player.setSaturation(5);
+		player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
+		player.setLevel(0);
+		BossBarManager.removePlayer(player);
 	}
 	
 }

@@ -1,4 +1,4 @@
-package me.groot_23.ming.scoreboard;
+package me.groot_23.ming.display;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
