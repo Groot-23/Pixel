@@ -17,11 +17,13 @@ public class BossBarManager {
 	}
 	
 	public static void addPlayer(BossBar bar, Player player) {
-		bar.addPlayer(player);
-		if(!bars.containsKey(player.getUniqueId())) {
-			bars.put(player.getUniqueId(), new ArrayList<BossBar>());
+		if(!bar.getPlayers().contains(player)) {
+			bar.addPlayer(player);
+			if(!bars.containsKey(player.getUniqueId())) {
+				bars.put(player.getUniqueId(), new ArrayList<BossBar>());
+			}
+			bars.get(player.getUniqueId()).add(bar);
 		}
-		bars.get(player.getUniqueId()).add(bar);
 	}
 	
 	public static void removePlayer(Player player) {

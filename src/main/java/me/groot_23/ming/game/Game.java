@@ -22,6 +22,7 @@ public class Game {
 	}
 	
 	public void startGame() {
+		state.onStart();
 		new BukkitRunnable() {
 			
 			@Override

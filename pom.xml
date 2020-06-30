@@ -25,6 +25,7 @@
 			<id>github</id>
 			<name>GitHub LuCpp-Stackwalker Apache Maven Packages</name>
 			<url>https://maven.pkg.github.com/LuCpp-Stackwalker/MinG</url>
+			<uniqueVersion>false</uniqueVersion>
 		</repository>
 	</distributionManagement>
 

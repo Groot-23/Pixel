@@ -18,18 +18,20 @@ public class LanguageManager {
 	private Map<String, Map<String, String>> langValues;
 	
 	private String defaultLanguage;
+	private File langFolder;
 	
-	public LanguageManager(String defaultLanguage) {
+	public LanguageManager(String defaultLanguage, File langFolder) {
 		langValues = new HashMap<String, Map<String,String>>();
 		this.defaultLanguage = defaultLanguage;
+		this.langFolder = langFolder;
 	}
 	
-	public void loadLanguages(File langFolder) {
+	public void loadLanguages() {
 		if(!langFolder.isDirectory()) {
 			throw new IllegalArgumentException("The given file is not a directory!");
 		}
 		for(File f : langFolder.listFiles()) {
-			Utf8Config config = new Utf8Config();
+			Utf8Config config = getConfig(f);
 			try {
 				config.load(f);
 				loadLang(FilenameUtils.removeExtension(f.getName()), config);
@@ -95,4 +97,30 @@ public class LanguageManager {
 		return getTranslation(player.getLocale(), key);
 	}
 	
+	public Utf8Config getConfig(File language) {
+		Utf8Config config = new Utf8Config();
+		try {
+			config.load(language);
+			return config;
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InvalidConfigurationException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public Utf8Config getConfig(String language) {
+		return getConfig(getFile(language));
+	}
+	
+	public File getFile(String language) {
+		return new File(langFolder, language + ".yml");
+	}
+	
+	public File getFolder() {
+		return langFolder;
+	}
 }

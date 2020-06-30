@@ -47,8 +47,8 @@ public abstract class MiniGame {
 	}
 	
 	public void init() {
-		lang = new LanguageManager(getDefaultLanguage());
-		lang.loadLanguages(new File(plugin.getDataFolder(), "lang"));
+		lang = new LanguageManager(getDefaultLanguage(), new File(plugin.getDataFolder(), "lang"));
+		lang.loadLanguages();
 		arenaProvider = new ArenaProvider(this);
 		
 		guiRunnables = new HashMap<String, GuiRunnable>();
@@ -71,8 +71,11 @@ public abstract class MiniGame {
 	public String getTranslation(Player player, String key) {
 		return lang.getTranslation(player, key);
 	}
-	public String getDefualtTranslation(String key) {
+	public String getDefaultTranslation(String key) {
 		return lang.getDefault(key);
+	}
+	public LanguageManager getLangManager() {
+		return lang;
 	}
 	
 	/**
