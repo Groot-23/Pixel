@@ -18,13 +18,13 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import me.groot_23.ming.MiniGame;
 import me.groot_23.ming.events.MGameJoinEvent;
+import me.groot_23.ming.game.MiniGameMode;
 
 public class Arena {
 
 	protected JavaPlugin plugin;
-	protected MiniGame game;
+	protected MiniGameMode mode;
 
 	protected World world;
 	protected Location midSpawn;
@@ -38,15 +38,18 @@ public class Arena {
 
 	protected List<Location> spawns;
 
-	public Arena(MiniGame game, World world, String mapName) {
-		this.game = game;
+	public Arena(MiniGameMode mode, World world, String mapName) {
+		this.mode = mode;
 		this.world = world;
 		this.mapName = mapName;
-		this.plugin = game.getPlugin();
+		this.plugin = mode.getPlugin();
 		readConfig();
 		findPlayerSpawns();
 	}
 
+	public MiniGameMode getMode() {
+		return mode;
+	}
 	public World getWorld() {
 		return world;
 	}
@@ -74,7 +77,7 @@ public class Arena {
 	public void disableJoin() {
 		if (allowJoin) {
 			allowJoin = false;
-			game.getArenaProvider().stopJoin(this);
+			mode.getArenaProvider().stopJoin(this);
 		}
 	}
 
@@ -186,4 +189,5 @@ public class Arena {
 		int zDist = midSpawn.getBlockZ() - location.getBlockZ();
 		return (Math.abs(xDist) < midRadius && Math.abs(zDist) < midRadius);
 	}
+	
 }

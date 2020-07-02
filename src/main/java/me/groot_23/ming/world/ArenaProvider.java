@@ -19,13 +19,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import me.groot_23.ming.MiniGame;
 import me.groot_23.ming.game.Game;
+import me.groot_23.ming.game.MiniGameMode;
 
 
 public class ArenaProvider {
 	
 	private JavaPlugin plugin;
 	private String worldPrefix;
-	private MiniGame game;
+	private MiniGameMode mode;
 	
 	private Arena currentArena = null;
 	
@@ -35,18 +36,18 @@ public class ArenaProvider {
 	
 	private Map<UUID, Arena> arenaByUid = new HashMap<UUID, Arena>();
 	
-	public ArenaProvider(MiniGame game, Map<String, Integer> weights) {
-		this.game = game;
-		plugin = game.getPlugin();
-		worldPrefix = game.getWorldPrefix();
+	public ArenaProvider(MiniGameMode mode, Map<String, Integer> weights) {
+		this.mode = mode;
+		plugin = mode.getPlugin();
+		worldPrefix = mode.getMiniGame().getWorldPrefix();
 		this.weights = weights;
 		update();
 	}
 	
-	public ArenaProvider(MiniGame game) {
-		this.game = game;
-		plugin = game.getPlugin();
-		worldPrefix = game.getWorldPrefix();
+	public ArenaProvider(MiniGameMode mode) {
+		this.mode = mode;
+		plugin = mode.getPlugin();
+		worldPrefix = mode.getMiniGame().getWorldPrefix();
 		ConfigurationSection worlds = plugin.getConfig().getConfigurationSection("worlds");
 		weights = new HashMap<String, Integer>();
 		if (worlds != null) {
@@ -105,7 +106,7 @@ public class ArenaProvider {
 				if (Bukkit.getWorld(worldName) == null) {
 					World world = Bukkit.createWorld(getWorldCreator(worldName));
 					if(world != null) {
-						currentArena = game.createArena(world, currentMap);
+						currentArena = mode.createArena(world, currentMap);
 					} else {
 						System.out.println("[MinG] World " + worldName + " COULD NOT BE LOADED");
 					}
@@ -116,15 +117,16 @@ public class ArenaProvider {
 				World world = Bukkit.createWorld(getWorldCreator(worldName));
 				// maybe no new world could be loaded for some reason -> prevent endless loop
 				if(world != null) {
-					currentArena = game.createArena(world, currentMap);
+					currentArena = mode.createArena(world, currentMap);
 				} else {
 					return false;
 				}
 			}
 		}
-
-		new Game(game, currentArena).startGame();
+	
+		new Game(currentArena).startGame();
 		arenaByUid.put(currentArena.getWorld().getUID(), currentArena);
+		mode.getMiniGame().addArenaToCurrentGames(currentArena);
 
 		System.out.println("[Skywars] Successfully created new arena: "+ currentArena.getWorld().getName());
 		return true;
@@ -165,6 +167,7 @@ public class ArenaProvider {
 	
 	public void stopArena(World world) {
 		arenaByUid.remove(world.getUID());
+		mode.getMiniGame().removeArenaFromCurrentGames(world.getUID());
 		WorldUtil.deleteWorld(world.getName());
 	}
 	

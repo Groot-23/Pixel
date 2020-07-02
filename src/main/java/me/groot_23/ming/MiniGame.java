@@ -4,9 +4,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -21,6 +23,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import me.groot_23.ming.config.Utf8Config;
 import me.groot_23.ming.game.GameState;
+import me.groot_23.ming.game.MiniGameMode;
 import me.groot_23.ming.gui.GuiCloseRunnable;
 import me.groot_23.ming.gui.GuiItem;
 import me.groot_23.ming.gui.GuiRunnable;
@@ -32,8 +35,11 @@ import me.groot_23.ming.world.ArenaProvider;
 
 public abstract class MiniGame {
 	
+	protected Map<String, MiniGameMode> gameModes;
+	
+	protected Map<UUID, Arena> arenaById = new HashMap<UUID, Arena>();
+	
 	protected JavaPlugin plugin;
-	protected ArenaProvider arenaProvider;
 	protected LanguageManager lang;
 	
 	protected Map<String, Kit> kitsByName;
@@ -49,21 +55,32 @@ public abstract class MiniGame {
 	public void init() {
 		lang = new LanguageManager(getDefaultLanguage(), new File(plugin.getDataFolder(), "lang"));
 		lang.loadLanguages();
-		arenaProvider = new ArenaProvider(this);
 		
 		guiRunnables = new HashMap<String, GuiRunnable>();
 		registerGuiRunnables();
 		
 		MinG.registerMiniGame(this);
 		
+		gameModes = new HashMap<String, MiniGameMode>();
+		registerModes();
+		
 		kitsByName = new HashMap<String, Kit>();
 		kitsByIndex = new ArrayList<Kit>();
 		initKits();
 	}
 	
-	public ArenaProvider getArenaProvider() {
-		return arenaProvider;
+	public final void registerMode(MiniGameMode mode) {
+		gameModes.put(mode.getName(), mode);
 	}
+	public abstract void registerModes();
+	
+	public MiniGameMode getMode(String name) {
+		return gameModes.get(name);
+	}
+	public Collection<MiniGameMode> getModes() {
+		return gameModes.values();
+	}
+	public abstract MiniGameMode getDefaultMode();
 	
 	public String getTranslation(String language, String key) {
 		return lang.getTranslation(language, key);
@@ -111,12 +128,6 @@ public abstract class MiniGame {
 	}
 	public GuiItem createGuiItem(Material material) {
 		return new GuiItem(getName(), material);
-	}
-	
-	public abstract GameState<?> getStartingState(Arena arena);
-	
-	public Arena createArena(World world, String map) {
-		return new Arena(this, world, map);
 	}
 	
 	public JavaPlugin getPlugin() {
@@ -196,4 +207,16 @@ public abstract class MiniGame {
 		kit.applyToPlayer(player);
 	}
 
+	public void addArenaToCurrentGames(Arena arena) {
+		arenaById.put(arena.getWorld().getUID(), arena);
+	}
+	public void removeArenaFromCurrentGames(UUID id) {
+		arenaById.remove(id);
+	}
+	public void removeArenaFromCurrentGames(Arena arena) {
+		removeArenaFromCurrentGames(arena.getWorld().getUID());
+	}
+	public Arena getArenaById(UUID id) {
+		return arenaById.get(id);
+	}
 }

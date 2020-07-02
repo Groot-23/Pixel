@@ -27,7 +27,7 @@ public class MinG {
 	}
 	
 	public static void registerMiniGame(MiniGame miniGame) {
-		registerListeners(miniGame.getPlugin());
+		init(miniGame.getPlugin());
 		miniGames.put(miniGame.getName(), miniGame);
 	}
 	
@@ -35,9 +35,11 @@ public class MinG {
 		return miniGames.get(name);
 	}
 	
-	public static void init() {
+	// e.g. listeners should only be registered once to prevent bugs caused by double executions
+	// so only register them once!
+	private static void init(JavaPlugin plugin) {
 		if(!initialized) {
-
+			registerListeners(plugin);
 			initialized = true;
 		}
 	}
@@ -65,6 +67,7 @@ public class MinG {
 		player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
 		player.setLevel(0);
 		BossBarManager.removePlayer(player);
+		player.setDisplayName(player.getName());
 	}
 	
 }
