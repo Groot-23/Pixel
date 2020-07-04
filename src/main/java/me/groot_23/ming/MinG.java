@@ -56,7 +56,7 @@ public class MinG {
 	}
 	
 	
-	public static void resetPlayer(Player player) {
+	public static void resetPlayer(Player player, JavaPlugin plugin) {
 		player.getInventory().clear();
 		for(PotionEffect effect : player.getActivePotionEffects()) {
 			player.removePotionEffect(effect.getType());
@@ -68,6 +68,7 @@ public class MinG {
 		player.setLevel(0);
 		BossBarManager.removePlayer(player);
 		player.setDisplayName(player.getName());
+		player.removeMetadata("ming_team", plugin);
 	}
 	
 }

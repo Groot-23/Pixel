@@ -124,9 +124,10 @@ public class ArenaProvider {
 			}
 		}
 	
-		new Game(currentArena).startGame();
+		Game game = new Game(currentArena);
+		game.startGame();
 		arenaByUid.put(currentArena.getWorld().getUID(), currentArena);
-		mode.getMiniGame().addArenaToCurrentGames(currentArena);
+		mode.getMiniGame().addCurrentGame(game);
 
 		System.out.println("[Skywars] Successfully created new arena: "+ currentArena.getWorld().getName());
 		return true;
@@ -167,7 +168,7 @@ public class ArenaProvider {
 	
 	public void stopArena(World world) {
 		arenaByUid.remove(world.getUID());
-		mode.getMiniGame().removeArenaFromCurrentGames(world.getUID());
+		mode.getMiniGame().removeCurrentGame(world.getUID());
 		WorldUtil.deleteWorld(world.getName());
 	}
 	

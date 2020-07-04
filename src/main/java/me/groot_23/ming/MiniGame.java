@@ -22,6 +22,7 @@ import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.groot_23.ming.config.Utf8Config;
+import me.groot_23.ming.game.Game;
 import me.groot_23.ming.game.GameState;
 import me.groot_23.ming.game.MiniGameMode;
 import me.groot_23.ming.gui.GuiCloseRunnable;
@@ -30,6 +31,7 @@ import me.groot_23.ming.gui.GuiRunnable;
 import me.groot_23.ming.kits.Kit;
 import me.groot_23.ming.kits.KitGuiRunnable;
 import me.groot_23.ming.language.LanguageManager;
+import me.groot_23.ming.player.TeamSelectorRunnable;
 import me.groot_23.ming.world.Arena;
 import me.groot_23.ming.world.ArenaProvider;
 
@@ -37,7 +39,7 @@ public abstract class MiniGame {
 	
 	protected Map<String, MiniGameMode> gameModes;
 	
-	protected Map<UUID, Arena> arenaById = new HashMap<UUID, Arena>();
+	protected Map<UUID, Game> gameById = new HashMap<UUID, Game>();
 	
 	protected JavaPlugin plugin;
 	protected LanguageManager lang;
@@ -102,6 +104,7 @@ public abstract class MiniGame {
 	public void registerGuiRunnables() {
 		registerGuiRunnable("ming_kit_selector", new KitGuiRunnable());
 		registerGuiRunnable("ming_gui_close", new GuiCloseRunnable());
+		registerGuiRunnable("ming_team_selector", new TeamSelectorRunnable());
 	}
 	public final void registerGuiRunnable(String name, GuiRunnable runnable) {
 		guiRunnables.put(name, runnable);
@@ -207,16 +210,17 @@ public abstract class MiniGame {
 		kit.applyToPlayer(player);
 	}
 
-	public void addArenaToCurrentGames(Arena arena) {
-		arenaById.put(arena.getWorld().getUID(), arena);
+	public void addCurrentGame(Game game) {
+		gameById.put(game.getArena().getWorld().getUID(), game);
 	}
-	public void removeArenaFromCurrentGames(UUID id) {
-		arenaById.remove(id);
-	}
-	public void removeArenaFromCurrentGames(Arena arena) {
-		removeArenaFromCurrentGames(arena.getWorld().getUID());
+	public void removeCurrentGame(UUID id) {
+		gameById.remove(id);
 	}
 	public Arena getArenaById(UUID id) {
-		return arenaById.get(id);
+		Game game = gameById.get(id);
+		return game == null ? null : game.getArena();
+	}
+	public Game getGameById(UUID id) {
+		return gameById.get(id);
 	}
 }
