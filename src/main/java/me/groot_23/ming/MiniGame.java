@@ -21,7 +21,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import me.groot_23.ming.config.Utf8Config;
 import me.groot_23.ming.game.Game;
 import me.groot_23.ming.game.GameState;
 import me.groot_23.ming.game.MiniGameMode;
@@ -32,6 +31,7 @@ import me.groot_23.ming.kits.Kit;
 import me.groot_23.ming.kits.KitGuiRunnable;
 import me.groot_23.ming.language.LanguageManager;
 import me.groot_23.ming.player.TeamSelectorRunnable;
+import me.groot_23.ming.util.Utf8Config;
 import me.groot_23.ming.world.Arena;
 import me.groot_23.ming.world.ArenaProvider;
 
@@ -55,8 +55,9 @@ public abstract class MiniGame {
 	}
 	
 	public void init() {
-		lang = new LanguageManager(getDefaultLanguage(), new File(plugin.getDataFolder(), "lang"));
-		lang.loadLanguages();
+		lang = new LanguageManager(getDefaultLanguage());
+		lang.addLanguageHolder(new File(plugin.getDataFolder(), "lang"));
+		lang.addLanguageHolder(new File(plugin.getDataFolder().getParent(), "MinG/lang"));
 		
 		guiRunnables = new HashMap<String, GuiRunnable>();
 		registerGuiRunnables();

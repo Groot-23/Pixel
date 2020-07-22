@@ -15,7 +15,7 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionType;
 
-import me.groot_23.ming.config.ItemSerializer;
+import me.groot_23.ming.util.ItemSerializer;
 
 public class KitItem {
 	

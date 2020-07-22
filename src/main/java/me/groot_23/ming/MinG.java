@@ -1,5 +1,6 @@
 package me.groot_23.ming;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,6 +12,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import me.groot_23.ming.display.BossBarManager;
 import me.groot_23.ming.listener.GuiListener;
+import me.groot_23.ming.util.ResourceExtractor;
 
 public class MinG {
 	
@@ -26,6 +28,14 @@ public class MinG {
 		Bukkit.getPluginManager().registerEvents(new GuiListener(), plugin);
 	}
 	
+	private static void extractResources(JavaPlugin plugin) {
+		File file = new File(plugin.getDataFolder().getParent(), "MinG/lang");
+		file.mkdirs();
+		String path = MinG.class.getPackage().getName().replace('.', '/') + "/resources/lang";
+//		System.out.println("MinG lang path:  " + path);
+		ResourceExtractor.extractResources(path, file.toPath(), true, false);
+	}
+	
 	public static void registerMiniGame(MiniGame miniGame) {
 		init(miniGame.getPlugin());
 		miniGames.put(miniGame.getName(), miniGame);
@@ -37,9 +47,10 @@ public class MinG {
 	
 	// e.g. listeners should only be registered once to prevent bugs caused by double executions
 	// so only register them once!
-	private static void init(JavaPlugin plugin) {
+	public static void init(JavaPlugin plugin) {
 		if(!initialized) {
 			registerListeners(plugin);
+			extractResources(plugin);
 			initialized = true;
 		}
 	}

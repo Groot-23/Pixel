@@ -13,8 +13,8 @@ import org.bukkit.craftbukkit.libs.org.apache.commons.io.FilenameUtils;
 import org.bukkit.entity.Player;
 
 import me.groot_23.ming.MiniGame;
-import me.groot_23.ming.config.Utf8Config;
 import me.groot_23.ming.language.LanguageManager;
+import me.groot_23.ming.util.Utf8Config;
 
 public class LangCommand implements CommandExecutor, TabCompleter{
 
@@ -49,13 +49,13 @@ public class LangCommand implements CommandExecutor, TabCompleter{
 	public static List<String> tabComplete(MiniGame game, String[] args) {
 		List<String> list = new ArrayList<String>();
 		if(args.length == 1) {
-			for(String s : game.getLangManager().getFolder().list()) {
+			for(String s : game.getLangManager().getLanguageHolder(0).getFolder().list()) {
 				s = FilenameUtils.removeExtension(s);
 				if(s.startsWith(args[0])) list.add(s);
 			}
 		}
 		else if(args.length == 2) {
-			Utf8Config cfg = game.getLangManager().getConfig(args[0]);
+			Utf8Config cfg = game.getLangManager().getLanguageHolder(0).getConfig(args[0]);
 			if(cfg != null) {
 				for(String s : cfg.getKeys(true)) {
 					if(s.startsWith(args[1]) && !cfg.isConfigurationSection(s)) list.add(s);
@@ -67,7 +67,7 @@ public class LangCommand implements CommandExecutor, TabCompleter{
 	
 	public static void execute(MiniGame game, CommandSender sender, String[] args) {
 		LanguageManager lang = game.getLangManager();
-		Utf8Config cfg = lang.getConfig(args[0]);
+		Utf8Config cfg = lang.getLanguageHolder(0).getConfig(args[0]);
 		if(cfg != null) {
 			if(args.length > 1) {
 				if(args.length == 2) {
@@ -79,7 +79,7 @@ public class LangCommand implements CommandExecutor, TabCompleter{
 					}
 					cfg.set(args[1], val);
 					try {
-						cfg.save(lang.getFile(args[0]));
+						cfg.save(lang.getLanguageHolder(0).getFile(args[0]));
 						sender.sendMessage(ChatColor.GREEN + "Value of '" + args[1] + " was updated successfully!");
 					} catch (IOException e) {
 						e.printStackTrace();

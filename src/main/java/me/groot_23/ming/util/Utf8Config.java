@@ -1,4 +1,4 @@
-package me.groot_23.ming.config;
+package me.groot_23.ming.util;
 
 import java.io.File;
 import java.io.FileInputStream;

@@ -11,8 +11,8 @@ import org.bukkit.inventory.ItemStack;
 
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import me.groot_23.ming.MiniGame;
-import me.groot_23.ming.config.ItemSerializer;
 import me.groot_23.ming.gui.GuiItem;
+import me.groot_23.ming.util.ItemSerializer;
 
 
 public class Kit {

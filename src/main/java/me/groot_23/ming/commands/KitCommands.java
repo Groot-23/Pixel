@@ -15,8 +15,8 @@ import org.bukkit.craftbukkit.libs.org.apache.commons.io.FilenameUtils;
 import org.bukkit.entity.Player;
 
 import me.groot_23.ming.MiniGame;
-import me.groot_23.ming.config.Utf8Config;
 import me.groot_23.ming.kits.Kit;
+import me.groot_23.ming.util.Utf8Config;
 
 public class KitCommands implements CommandExecutor, TabCompleter {
 	
@@ -68,14 +68,14 @@ public class KitCommands implements CommandExecutor, TabCompleter {
 					if(name.startsWith(args[2])) list.add(name);
 				}
 			} else if(args[0].equals("name") || args[0].equals("description")) {
-				for(String s : game.getLangManager().getFolder().list()) {
+				for(String s : game.getLangManager().getLanguageHolder(0).getFolder().list()) {
 					s = FilenameUtils.removeExtension(s);
 					if(s.startsWith(args[2])) list.add(s);
 				}
 			}
 		} else if(args.length == 4) {
 			if(args[0].equals("name") || args[0].equals("description")) {
-				Utf8Config cfg = game.getLangManager().getConfig(args[2]);
+				Utf8Config cfg = game.getLangManager().getLanguageHolder(0).getConfig(args[2]);
 				if(cfg != null) {
 					String s = cfg.getString("kits." + args[1] + "." + args[0]);
 					if(s != null && s.startsWith(args[3])) {
@@ -161,14 +161,10 @@ public class KitCommands implements CommandExecutor, TabCompleter {
 	}
 	
 	public static void setLangValue(MiniGame game, String kit, String language, String key, String value) {
-		Utf8Config cfg = game.getLangManager().getConfig(language);
+		Utf8Config cfg = game.getLangManager().getLanguageHolder(0).getConfig(language);
 		if(cfg != null) {
 			cfg.set("kits." + kit + "." + key, value);
-			try {
-				cfg.save(game.getLangManager().getFile(language));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			game.getLangManager().getLanguageHolder(0).saveConfig(cfg, language);
 		}
 	}
 	

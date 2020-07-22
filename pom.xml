@@ -5,7 +5,7 @@
 
 	<groupId>me.groot_23.ming</groupId>
 	<artifactId>ming-api</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.1.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>ming-api</name>
@@ -30,6 +30,13 @@
 	</distributionManagement>
 
 	<build>
+		<sourceDirectory>${basedir}/src/main/java</sourceDirectory>
+		<resources>
+			<resource>
+				<targetPath>./me/groot_23/ming/resources</targetPath>
+				<directory>${basedir}/src/main/resources/</directory>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
