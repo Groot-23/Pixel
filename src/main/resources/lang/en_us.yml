@@ -142,10 +142,10 @@ material:
   cauldron: cauldron
   cave_air: cave air
   cave_spider_spawn_egg: cave spider spawn egg
-  chainmail_boots: Kettenstiefel
-  chainmail_chestplate: Kettenhemd
-  chainmail_helmet: Kettenhelm
-  chainmail_leggings: Kettenhose
+  chainmail_boots: chainmail boots
+  chainmail_chestplate: chainmail chestplate
+  chainmail_helmet: chainmail helmet
+  chainmail_leggings: chainmail leggings
   chain_command_block: chain command block
   charcoal: charcoal
   chest: chest
@@ -262,19 +262,19 @@ material:
   dead_tube_coral_wall_fan: dead tube coral wall fan
   debug_stick: debug stick
   detector_rail: detector rail
-  diamond: Diamant
-  diamond_axe: Diamantaxt
-  diamond_block: Diamant block
-  diamond_boots: Diamantstiefel
-  diamond_chestplate: Diamantbrustplatte
-  diamond_helmet: Diamanthelm
-  diamond_hoe: Diamanthacke
-  diamond_horse_armor: Diamantpferderüstung
-  diamond_leggings: Diamanthose
-  diamond_ore: Diamant ore
-  diamond_pickaxe: Diamantspitzhacke
-  diamond_shovel: Diamantschaufel
-  diamond_sword: Diamantschwert
+  diamond: diamond
+  diamond_axe: diamond axe
+  diamond_block: diamond block
+  diamond_boots: diamond boots
+  diamond_chestplate: diamond chestplate
+  diamond_helmet: diamond helmet
+  diamond_hoe: diamond hoe
+  diamond_horse_armor: diamond horse armor
+  diamond_leggings: diamond leggings
+  diamond_ore: diamond ore
+  diamond_pickaxe: diamond pickaxe
+  diamond_shovel: diamond shovel
+  diamond_sword: diamond sword
   diorite: diorite
   diorite_slab: diorite slab
   diorite_stairs: diorite stairs
@@ -350,17 +350,17 @@ material:
   glowstone: glowstone
   glowstone_dust: glowstone dust
   golden_apple: golden apple
-  golden_axe: Goldaxt
-  golden_boots: Goldstiefel
+  golden_axe: golden axe
+  golden_boots: golden boots
   golden_carrot: golden carrot
-  golden_chestplate: Goldbrustplatte
-  golden_helmet: Goldhelm
-  golden_hoe: Goldhacke
-  golden_horse_armor: Goldpferderüstung
-  golden_leggings: Goldhose
-  golden_pickaxe: Goldspitzhacke
-  golden_shovel: Goldschaufel
-  golden_sword: Goldschwert
+  golden_chestplate: golden chestplate
+  golden_helmet: golden helmet
+  golden_hoe: golden hoe
+  golden_horse_armor: golden horse armor
+  golden_leggings: golden leggings
+  golden_pickaxe: golden pickaxe
+  golden_shovel: golden shovel
+  golden_sword: golden sword
   gold_block: gold block
   gold_ingot: gold ingot
   gold_nugget: gold nugget
@@ -421,22 +421,22 @@ material:
   infested_stone: infested stone
   infested_stone_bricks: infested stone bricks
   ink_sac: ink sac
-  iron_axe: Eisenaxt
+  iron_axe: iron axe
   iron_bars: iron bars
   iron_block: iron block
-  iron_boots: Eisenstiefel
-  iron_chestplate: Eisenbrustplatte
+  iron_boots: iron boots
+  iron_chestplate: iron chestplate
   iron_door: iron door
-  iron_helmet: Eisenhelm
-  iron_hoe: Eisenhacke
-  iron_horse_armor: Eisenpferderüstung
-  iron_ingot: Eisen ingot
-  iron_leggings: Eisenhose
-  iron_nugget: Eisen nugget
-  iron_ore: Eisen ore
-  iron_pickaxe: Eisenspitzhacke
-  iron_shovel: Eisenschaufel
-  iron_sword: Eisenschwert
+  iron_helmet: iron helmet
+  iron_hoe: iron hoe
+  iron_horse_armor: iron horse armor
+  iron_ingot: iron ingot
+  iron_leggings: iron leggings
+  iron_nugget: iron nugget
+  iron_ore: iron ore
+  iron_pickaxe: iron pickaxe
+  iron_shovel: iron shovel
+  iron_sword: iron sword
   iron_trapdoor: iron trapdoor
   item_frame: item frame
   jack_o_lantern: jack o lantern
@@ -470,12 +470,12 @@ material:
   lava: lava
   lava_bucket: lava bucket
   lead: lead
-  leather: Leder
-  leather_boots: Lederstiefel
-  leather_chestplate: Lederjacke
-  leather_helmet: Lederhelm
-  leather_horse_armor: Lederpferderüstung
-  leather_leggings: Lederhose
+  leather: leather
+  leather_boots: leather boots
+  leather_chestplate: leather chestplate
+  leather_helmet: leather helmet
+  leather_horse_armor: leather horse armor
+  leather_leggings: leather leggings
   lectern: lectern
   lever: lever
   light_blue_banner: light blue banner
@@ -851,19 +851,19 @@ material:
   sticky_piston: sticky piston
   stone: stone
   stonecutter: stonecutter
-  stone_axe: Steinaxt
+  stone_axe: stone axe
   stone_bricks: stone bricks
   stone_brick_slab: stone brick slab
   stone_brick_stairs: stone brick stairs
   stone_brick_wall: stone brick wall
-  stone_button: Stein button
-  stone_hoe: Steinhacke
-  stone_pickaxe: Steinspitzhacke
+  stone_button: stone button
+  stone_hoe: stone hoe
+  stone_pickaxe: stone pickaxe
   stone_pressure_plate: stone pressure plate
-  stone_shovel: Steinschaufel
+  stone_shovel: stone shovel
   stone_slab: stone slab
   stone_stairs: stone stairs
-  stone_sword: Steinschwert
+  stone_sword: stone sword
   stray_spawn_egg: stray spawn egg
   string: string
   stripped_acacia_log: stripped acacia log
@@ -941,11 +941,11 @@ material:
   wither_skeleton_spawn_egg: wither skeleton spawn egg
   wither_skeleton_wall_skull: wither skeleton wall skull
   wolf_spawn_egg: wolf spawn egg
-  wooden_axe: Holzaxt
-  wooden_hoe: Holzhacke
-  wooden_pickaxe: Holzspitzhacke
-  wooden_shovel: Holzschaufel
-  wooden_sword: Holzschwert
+  wooden_axe: wooden axe
+  wooden_hoe: wooden hoe
+  wooden_pickaxe: wooden pickaxe
+  wooden_shovel: wooden shovel
+  wooden_sword: wooden sword
   writable_book: writable book
   written_book: written book
   yellow_banner: yellow banner

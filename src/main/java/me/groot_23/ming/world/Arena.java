@@ -36,7 +36,6 @@ public class Arena {
 
 	protected boolean allowJoin = true;
 
-	protected List<Location> spawns;
 
 	public Arena(MiniGameMode mode, World world, String mapName) {
 		this.mode = mode;
@@ -44,7 +43,6 @@ public class Arena {
 		this.mapName = mapName;
 		this.plugin = mode.getPlugin();
 		readConfig();
-		findPlayerSpawns();
 	}
 
 	public MiniGameMode getMode() {
@@ -68,10 +66,6 @@ public class Arena {
 
 	public int getMaxPlayers() {
 		return maxPlayers;
-	}
-
-	public List<Location> getSpawns() {
-		return spawns;
 	}
 
 	public void disableJoin() {
@@ -121,17 +115,6 @@ public class Arena {
 		}
 	}
 
-	protected void findPlayerSpawns() {
-		spawns = new ArrayList<Location>();
-		for (Entity entity : world.getEntities()) {
-			if (entity.getType() == EntityType.ARMOR_STAND) {
-				if (entity.getCustomName().equals("skywars_spawn")) {
-					spawns.add(entity.getLocation());
-				}
-			}
-		}
-		Collections.shuffle(spawns);
-	}
 
 
 	public void removeArea(Location l1, Location l2, Material... filter) {

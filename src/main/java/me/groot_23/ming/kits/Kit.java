@@ -72,7 +72,7 @@ public class Kit {
 		}
 		lore.add(ChatColor.YELLOW + game.getTranslation(player, "kit.items"));
 		for(KitItem item : items) {
-			lore.add(ChatColor.RESET + " - " + item.toString());
+			lore.add(ChatColor.RESET + " - " + item.asString(game.getLangManager(), player.getLocale()));
 		}
 		return lore;
 	}

@@ -3,6 +3,8 @@ package me.groot_23.ming.language;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 public class LanguageManager {
@@ -24,7 +26,7 @@ public class LanguageManager {
 	
 	/**
 	 * 
-	 * @param index Use 0 to get your LangHolder and 1 to get MinG's (if you don't change it in
+	 * @param index Use 1 to get your LangHolder and 0 to get MinG's (if you don't change it in
 	 *  {@link me.groot_23.ming.MiniGame#init() Minigame#init})
 	 * @return
 	 */
@@ -33,8 +35,8 @@ public class LanguageManager {
 	}
 	
 	public String getTranslation(String language, String key, String fallback) {
-		for(LanguageHolder holder : langHolders) {
-			String translation = holder.getTranslation(language, key, null);
+		for(int i = langHolders.size() - 1; i >= 0; --i) {
+			String translation = langHolders.get(i).getTranslation(language, key, null);
 			if(translation != null) return translation;
 		}
 		return fallback;
@@ -50,13 +52,23 @@ public class LanguageManager {
 	}
 	
 	public String getDefault(String key, String fallback) {
-		for(LanguageHolder holder : langHolders) {
-			String translation = holder.getDefault(key, null);
+		for(int i = langHolders.size() - 1; i >= 0; --i) {
+			String translation = langHolders.get(i).getDefault(key, null);
 			if(translation != null) return translation;
 		}
 		return fallback;
 	}
 	public String getDefault(String key) {
 		return getDefault(key, key);
+	}
+	
+	public String translateMaterial(String language, Material material) {
+		return getTranslation(language, "material." + material.name().toLowerCase());
+	}
+	public String translateMaterial(Player player, Material material) {
+		return getTranslation(player, "material." + material.name().toLowerCase());
+	}
+	public String translateMaterialDefault(Material material) {
+		return getDefault("material." + material.name().toLowerCase());
 	}
 }

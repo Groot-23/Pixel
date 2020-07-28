@@ -56,8 +56,8 @@ public abstract class MiniGame {
 	
 	public void init() {
 		lang = new LanguageManager(getDefaultLanguage());
-		lang.addLanguageHolder(new File(plugin.getDataFolder(), "lang"));
 		lang.addLanguageHolder(new File(plugin.getDataFolder().getParent(), "MinG/lang"));
+		lang.addLanguageHolder(new File(plugin.getDataFolder(), "lang"));
 		
 		guiRunnables = new HashMap<String, GuiRunnable>();
 		registerGuiRunnables();

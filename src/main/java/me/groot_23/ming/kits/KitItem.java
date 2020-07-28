@@ -15,6 +15,7 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionType;
 
+import me.groot_23.ming.language.LanguageManager;
 import me.groot_23.ming.util.ItemSerializer;
 
 public class KitItem {
@@ -46,9 +47,8 @@ public class KitItem {
 		return slot;
 	}
 	
-	@Override
-	public String toString() {
-		return ItemSerializer.asString(item);
+	public String asString(LanguageManager manager, String lang) {
+		return ItemSerializer.asString(item, manager, lang);
 	}
 	
 	public static KitItem deserialize(ConfigurationSection section) {
