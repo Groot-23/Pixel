@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
+import me.groot_23.ming.MiniGame;
 import me.groot_23.ming.world.WorldMarker;
 
 public class MarkerCommand implements CommandExecutor, TabCompleter {
@@ -17,7 +18,9 @@ public class MarkerCommand implements CommandExecutor, TabCompleter {
 	private String cmdName;
 	private String markerName;
 	
-	public MarkerCommand(String commandName, String markerName) {
+	public MarkerCommand(MiniGame game, String commandName, String markerName) {
+		game.getPlugin().getCommand(commandName).setExecutor(this);
+		game.getPlugin().getCommand(commandName).setTabCompleter(this);
 		this.cmdName = commandName;
 		this.markerName = markerName;
 	}

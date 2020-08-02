@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 
 public class LanguageManager {
@@ -70,5 +71,15 @@ public class LanguageManager {
 	}
 	public String translateMaterialDefault(Material material) {
 		return getDefault("material." + material.name().toLowerCase());
+	}
+	
+	public String translateEnchant(String language, Enchantment enchant) {
+		return getTranslation(language, "enchant." + enchant.getKey().getKey());
+	}
+	public String translateEnchant(Player player, Enchantment enchant) {
+		return getTranslation(player, "enchant." + enchant.getKey().getKey());
+	}
+	public String translateEnchantDefault(Enchantment enchant) {
+		return getDefault("enchant." + enchant.getKey().getKey());
 	}
 }

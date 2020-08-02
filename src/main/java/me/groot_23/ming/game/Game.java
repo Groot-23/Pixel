@@ -1,199 +1,115 @@
 package me.groot_23.ming.game;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerInteractAtEntityEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 
-import de.tr7zw.changeme.nbtapi.NBTItem;
 import me.groot_23.ming.MiniGame;
-import me.groot_23.ming.gui.GuiItem;
-import me.groot_23.ming.player.GameTeam;
+import me.groot_23.ming.game.task.GameTaskManager;
+import me.groot_23.ming.player.TeamHandler;
 import me.groot_23.ming.world.Arena;
 
-public class Game {
+public abstract class Game {
 	
-	private boolean running = false;
 	
-	protected GameState<?> state;
-	protected JavaPlugin plugin;
-	protected MiniGameMode mode;
-	protected Arena arena;
+	public final MiniGame miniGame;
+	public final MiniGameMode mode;
+	public final Arena arena;
+	public final JavaPlugin plugin;
 	
-	protected Map<ChatColor, GameTeam> teams;
-	protected Inventory teamSelector;
+	public final GameTaskManager taskManager;
 	
-	public Game(Arena arena) {
-		this.mode = arena.getMode();
-		this.arena = arena;
-		this.state = mode.getStartingState(this);
-		this.plugin = mode.getPlugin();
-		this.teams = new HashMap<ChatColor, GameTeam>();
-		for(ChatColor color : mode.getTeamColors()) {
-			teams.put(color, new GameTeam(plugin, color));
+	public final TeamHandler teamHandler;
+	
+	public final int id;
+	private static int currentID = 0;
+
+	
+	public Game(MiniGameMode mode, String worldGroup) {
+		this.id = currentID++;
+		this.mode = mode;
+		this.miniGame = mode.miniGame;
+		this.plugin = mode.plugin;
+		this.allowJoin = true;
+		arena = miniGame.worldProvider.provideArena(this, miniGame.worldProvider.getWorldGroup(worldGroup), 100);
+		teamHandler = new TeamHandler(mode, arena.getMaxPlayers());
+		taskManager = new GameTaskManager();
+	}
+	
+	public Game(MiniGameMode mode, String[] possibleMaps) {
+		this.id = currentID++;
+		this.mode = mode;
+		this.miniGame = mode.miniGame;
+		this.allowJoin = true;
+		this.plugin = mode.plugin;
+		arena = miniGame.worldProvider.provideArena(this, possibleMaps, 100);
+		teamHandler = new TeamHandler(mode, arena.getMaxPlayers());
+		taskManager = new GameTaskManager();
+	}
+	
+	public Arena createArena(World world, String map) {
+		return new Arena(this, world, map);
+	}
+	
+	protected boolean allowJoin;
+	public final List<Player> players = new ArrayList<Player>();
+	
+	public final void joinPlayer(Player player) {
+		if(allowJoin) {
+			players.add(player);
+			performJoin(player);
+			onJoin(player);
 		}
-		this.teamSelector = null;
 	}
-	
-	public void startGame() {
-		if(running) throw new IllegalStateException("You can't start a game while it is running!");
-		running = true;
-		state.onStart();
-		new BukkitRunnable() {
-			
-			@Override
-			public void run() {
-				if(state != null) {
-					state = state.update();
-				} else {
-					mode.getArenaProvider().stopArena(arena.getWorld());
-					cancel();
-				}
-			}
-		}.runTaskTimer(plugin, 20, 20);
-	}
-	
-	public GameState<?> getState() {
-		return state;
-	}
-	public Arena getArena() {
-		return arena;
-	}
-	public MiniGameMode getMode() {
-		return mode;
-	}
-	public MiniGame getMiniGame() {
-		return mode.getMiniGame();
-	}
-	
-	public Collection<GameTeam> getTeams() {
-		return teams.values();
-	}
-	
-	public void createRandomTeams(List<Player> players) {
-		Collections.shuffle(players);
-		int i = 0;
-		ChatColor[] colors = mode.getTeamColors();
-		GameTeam team = null;
-		for(Player player : players) {
-			if(i % mode.getPlayersPerTeam() == 0) {
-				team = new GameTeam(plugin, colors[i / mode.getPlayersPerTeam()]);
-				teams.put(team.getColor(), team);
-			}
-			team.addPlayer(player);
-			i++;
-		}
-		
-		for(Player player : players) {
-			for(GameTeam t : teams.values()) {
-				t.addTeamToScoreboard(player.getScoreboard());
-			}
+	protected void performJoin(Player player) {
+		arena.joinPlayer(player);
+		if(players.size() >= arena.getMaxPlayers()) {
+			allowJoin = false;
 		}
 	}
 	
-	public void fillTeams(List<Player> players) {
-		ChatColor[] colors = mode.getTeamColors();
-		GameTeam team = null;
-		int i = 0;
-		for(Player player : players) {
-			boolean alreadyInTeam = false;
-			ChatColor color = GameTeam.getTeamOfPlayer(player, plugin);
-			if(color != null) {
-				GameTeam t = teams.get(color);
-				if(teams != null) {
-					alreadyInTeam = t.getPlayers().contains(player);
-				}
-			}
-			System.out.println(player.getName());
-			System.out.println(alreadyInTeam);
-			if(!alreadyInTeam) {
-				team = null;
-				while(team == null && i < arena.getMaxPlayers()) {
-					team = teams.get(colors[i]);
-					System.out.println(team);
-					System.out.println(i);
-					if(team != null) {
-						System.out.println(team.getPlayers().size());
-						if(team.getPlayers().size() < mode.getPlayersPerTeam()) {
-							team.addPlayer(player);
-							break;
-						} else {
-							team = null;
-						}
-					}
-					i++;
-				}
-			}
-		}
-		
-		for(Player player : players) {
-			for(GameTeam t : teams.values()) {
-				t.addTeamToScoreboard(player.getScoreboard());
-			}
-		}
+	public void stopJoin() {
+		allowJoin = false;
+		mode.gameProvider.stopJoin(this);
 	}
 	
-	public GameTeam getTeam(ChatColor color) {
-		return teams.get(color);
+	public void endGame() {
+		mode.gameProvider.stopGame(this);
 	}
 	
-	public boolean movePlayerToTeam(Player player, ChatColor team) {
-		GameTeam to = teams.get(team);
-		GameTeam from = teams.get(GameTeam.getTeamOfPlayer(player, mode.getPlugin()));
-		if(to != null) {
-			if(to.getPlayers().size() < mode.getPlayersPerTeam()) {
-				to.addPlayer(player);
-				if(from != null) {
-					from.removePlayer(player);
-				}
-				return true;
-			}
-		}
-		return false;
+	public void onJoin(Player player) {}
+	
+	public void onDeath(PlayerDeathEvent event) {}
+	
+	public void onRespawn(PlayerRespawnEvent event) {}
+	
+	public void onPlayerLeave(Player player) {
+		players.remove(player);
 	}
 	
-	public List<GameTeam> getTeamsAlive() {
-		List<GameTeam> alive = new ArrayList<GameTeam>();
-		for(GameTeam team : teams.values()) {
-			if(team.isAlive()) {
-				alive.add(team);
-			}
-		}
-		return alive;
-	}
+	public void onBlockPlace(BlockPlaceEvent event) {}
+	public void onBlockBreak(BlockBreakEvent event) {}
 	
-	public int getTeamsAliveCount() {
-		int counter = 0;
-		for(GameTeam team : teams.values()) {
-			if(team.isAlive()) {
-				counter++;
-			}
-		}
-		return counter;
-	}
+	public void onEntityDamage(EntityDamageEvent event) {}
+	public void onEntityDeath(EntityDeathEvent event) {}
 	
-	public Inventory getTeamSelectorInv() {
-		if(teamSelector == null) {
-			teamSelector = Bukkit.createInventory(null, 9*(mode.getPlayersPerTeam() + 1));
-			ChatColor[] colors = mode.getTeamColors();
-			for(int i = 0; i < arena.getMaxPlayers(); i++) {
-				GuiItem guiItem = getMiniGame().createGuiItem(GameTeam.woolFromColor(colors[i]));
-				guiItem.addActionClickRunnable("ming_team_selector");
-				NBTItem nbt = new NBTItem(guiItem.getItem());
-				nbt.setString("ming_team", colors[i].name().toLowerCase());
-				
-				teamSelector.setItem(i, nbt.getItem());
-			}
-		}
-		return teamSelector;
+	public void onInteract(PlayerInteractEvent event) {}
+	public void onInteractEntity(PlayerInteractEntityEvent event) {}
+	public void onInteractAtEntity(PlayerInteractAtEntityEvent event) {}
+	
+	public void onEnd() {
+		miniGame.worldProvider.removeWorld(arena.getWorld());
+		taskManager.removeAllTasks();
 	}
 }

@@ -8,21 +8,16 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
-
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import me.groot_23.ming.game.Game;
-import me.groot_23.ming.game.GameState;
 import me.groot_23.ming.game.MiniGameMode;
 import me.groot_23.ming.gui.GuiCloseRunnable;
 import me.groot_23.ming.gui.GuiItem;
@@ -30,16 +25,16 @@ import me.groot_23.ming.gui.GuiRunnable;
 import me.groot_23.ming.kits.Kit;
 import me.groot_23.ming.kits.KitGuiRunnable;
 import me.groot_23.ming.language.LanguageManager;
+import me.groot_23.ming.listener.GameListener;
 import me.groot_23.ming.player.TeamSelectorRunnable;
+import me.groot_23.ming.provider.WorldProvider;
 import me.groot_23.ming.util.Utf8Config;
-import me.groot_23.ming.world.Arena;
-import me.groot_23.ming.world.ArenaProvider;
 
 public abstract class MiniGame {
 	
 	protected Map<String, MiniGameMode> gameModes;
 	
-	protected Map<UUID, Game> gameById = new HashMap<UUID, Game>();
+	public final WorldProvider worldProvider;
 	
 	protected JavaPlugin plugin;
 	protected LanguageManager lang;
@@ -51,6 +46,8 @@ public abstract class MiniGame {
 	
 	public MiniGame(JavaPlugin plugin) {
 		this.plugin = plugin;
+		worldProvider = new WorldProvider(this);
+		worldProvider.cleanWorldFolders();
 		init();
 	}
 	
@@ -63,6 +60,9 @@ public abstract class MiniGame {
 		registerGuiRunnables();
 		
 		MinG.registerMiniGame(this);
+		
+		// register Game listener
+		Bukkit.getServer().getPluginManager().registerEvents(new GameListener(this), plugin);
 		
 		gameModes = new HashMap<String, MiniGameMode>();
 		registerModes();
@@ -168,13 +168,10 @@ public abstract class MiniGame {
 			cfg.load(getKitFile());
 			return cfg;
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvalidConfigurationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
@@ -209,19 +206,5 @@ public abstract class MiniGame {
 	public void applyKitToPlayer(Player player) {
 		Kit kit = getKit(player);
 		kit.applyToPlayer(player);
-	}
-
-	public void addCurrentGame(Game game) {
-		gameById.put(game.getArena().getWorld().getUID(), game);
-	}
-	public void removeCurrentGame(UUID id) {
-		gameById.remove(id);
-	}
-	public Arena getArenaById(UUID id) {
-		Game game = gameById.get(id);
-		return game == null ? null : game.getArena();
-	}
-	public Game getGameById(UUID id) {
-		return gameById.get(id);
 	}
 }

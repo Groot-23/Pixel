@@ -46,7 +46,7 @@ public class ItemSerializer {
 			Iterator<Map.Entry<Enchantment, Integer>> it = item.getEnchantments().entrySet().iterator();
 			while (it.hasNext()) {
 				Map.Entry<Enchantment, Integer> entry = it.next();
-				result += entry.getKey().getKey().getKey() + " " + entry.getValue();
+				result += manager.translateEnchant(language, entry.getKey()) + " " + entry.getValue();
 				if (it.hasNext()) {
 					result += ", ";
 				}

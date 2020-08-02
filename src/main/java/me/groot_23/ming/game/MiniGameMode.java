@@ -1,23 +1,25 @@
 package me.groot_23.ming.game;
 
 import org.bukkit.ChatColor;
-import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.groot_23.ming.MiniGame;
-import me.groot_23.ming.world.Arena;
-import me.groot_23.ming.world.ArenaProvider;
+import me.groot_23.ming.provider.GameProvider;
 
 public abstract class MiniGameMode {
 	
 	protected MiniGame miniGame;
-	protected ArenaProvider arenaProvider;
+//	protected ArenaProvider arenaProvider;
 	protected JavaPlugin plugin;
+//	protected WorldProvider worldProvider;
+	public final GameProvider gameProvider;
 	
 	public MiniGameMode(MiniGame miniGame) {
 		this.plugin = miniGame.getPlugin();
 		this.miniGame = miniGame;
-		arenaProvider = new ArenaProvider(this);
+		this.gameProvider = new GameProvider(this);
+		
+//		arenaProvider = new ArenaProvider(this);
 	}
 	
 	public JavaPlugin getPlugin() {
@@ -26,21 +28,22 @@ public abstract class MiniGameMode {
 	public MiniGame getMiniGame() {
 		return miniGame;
 	}
-	public ArenaProvider getArenaProvider() {
-		return arenaProvider;
-	}
+//	public ArenaProvider getArenaProvider() {
+//		return arenaProvider;
+//	}
 	
 	public abstract String getName();
 	
-	public Arena createArena(World world, String map) {
-		return new Arena(this, world, map);
-	}
+//	public Arena createArena(World world, String map) {
+//		return new Arena(this, world, map);
+//	}
 	
-	public abstract GameState<?> getStartingState(Game game);
 	
 	public int getPlayersPerTeam() {
 		return 1;
 	}
+	
+	public abstract Game createNewGame();
 	
 	
 	/**

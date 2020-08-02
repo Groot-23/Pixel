@@ -42,7 +42,6 @@ public class GameTeam {
 	public void addPlayer(Player player) {
 		players.add(player);
 		updateScoreboardTeams();
-		System.out.println(color.name().toLowerCase());
 		player.setMetadata("ming_team", new FixedMetadataValue(plugin, color.name().toLowerCase()));
 	}
 
@@ -78,7 +77,7 @@ public class GameTeam {
 	
 	public boolean isAlive() {
 		for (Player player : players) {
-			if (player.getGameMode() == GameMode.SURVIVAL) {
+			if (player.getGameMode() == GameMode.SURVIVAL && player.isOnline()) {
 				return true;
 			}
 		}
@@ -107,7 +106,7 @@ public class GameTeam {
 
 	private void initTeamData(Team team) {
 		team.setAllowFriendlyFire(false);
-		team.setPrefix(color + "[" + color.name() + "] ");
+		team.setPrefix(color + "[" + color.name() + "] "); 
 	}
 	
 	public static ChatColor getTeamOfPlayer(Player player, JavaPlugin plugin) {
@@ -115,7 +114,6 @@ public class GameTeam {
 		if(values != null) {
 			for(MetadataValue val : values) {
 				if(val.getOwningPlugin() == plugin) {
-					System.out.println(val.asString());
 					return ChatColor.valueOf(val.asString().toUpperCase());
 				}
 			}

@@ -1,11 +1,7 @@
 package me.groot_23.ming.world;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
-
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -13,18 +9,15 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import me.groot_23.ming.events.MGameJoinEvent;
-import me.groot_23.ming.game.MiniGameMode;
+import me.groot_23.ming.game.Game;
 
 public class Arena {
 
 	protected JavaPlugin plugin;
-	protected MiniGameMode mode;
+	protected Game game;
 
 	protected World world;
 	protected Location midSpawn;
@@ -34,19 +27,17 @@ public class Arena {
 	protected int midRadius;
 	protected int mapRadius;
 
-	protected boolean allowJoin = true;
 
-
-	public Arena(MiniGameMode mode, World world, String mapName) {
-		this.mode = mode;
+	public Arena(Game game, World world, String mapName) {
+		this.game = game;
 		this.world = world;
 		this.mapName = mapName;
-		this.plugin = mode.getPlugin();
+		this.plugin = game.mode.getPlugin();
 		readConfig();
 	}
 
-	public MiniGameMode getMode() {
-		return mode;
+	public Game getGame() {
+		return game;
 	}
 	public World getWorld() {
 		return world;
@@ -68,47 +59,30 @@ public class Arena {
 		return maxPlayers;
 	}
 
-	public void disableJoin() {
-		if (allowJoin) {
-			allowJoin = false;
-			mode.getArenaProvider().stopJoin(this);
-		}
-	}
 
-	public boolean joinPlayer(Player player) {
-		if (allowJoin) {
-			player.teleport(midSpawn);
-
-			MGameJoinEvent event = new MGameJoinEvent(player);
-			Bukkit.getServer().getPluginManager().callEvent(event);
-
-			Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-				@Override
-				public void run() {
-					player.setGameMode(GameMode.ADVENTURE);
-				}
-			}, 1);
-			if (world.getPlayers().size() >= maxPlayers) {
-				disableJoin();
+	public void joinPlayer(Player player) {
+		player.teleport(midSpawn);
+		Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+			@Override
+			public void run() {
+				player.setGameMode(GameMode.ADVENTURE);
 			}
-			return true;
-		}
-		return false;
+		}, 1);
 	}
 
 	protected void readConfig() {
-		ConfigurationSection section = plugin.getConfig().getConfigurationSection("worlds." + mapName);
+		ConfigurationSection section = game.miniGame.worldProvider.getWorldSection(mapName); // plugin.getConfig().getConfigurationSection("worlds." + mapName);
 		if (section == null) {
-			throw new RuntimeException("Skywars Config does not contain '" + "worlds." + mapName + "'");
+			throw new RuntimeException("[MinG] " + plugin.getName() + "config does not contain '" + "worlds." + mapName + "'");
 		}
 		minPlayers = section.getInt("minPlayers");
 		maxPlayers = section.getInt("maxPlayers");
 		midRadius = section.getInt("midRadius");
 		mapRadius = section.getInt("mapRadius");
 		if (section.contains("spawns")) {
-			int spawnX = section.getInt("spawns.x");
-			int spawnY = section.getInt("spawns.y");
-			int spawnZ = section.getInt("spawns.z");
+			int spawnX = section.getInt("midSpawn.x");
+			int spawnY = section.getInt("midSpawn.y");
+			int spawnZ = section.getInt("midSpawn.z");
 			midSpawn = new Location(world, spawnX, spawnY, spawnZ);
 		} else {
 			midSpawn = world.getSpawnLocation();

@@ -3,6 +3,7 @@ package me.groot_23.ming;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -10,6 +11,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.scheduler.BukkitRunnable;
+
 import me.groot_23.ming.display.BossBarManager;
 import me.groot_23.ming.listener.GuiListener;
 import me.groot_23.ming.util.ResourceExtractor;
@@ -32,7 +35,6 @@ public class MinG {
 		File file = new File(plugin.getDataFolder().getParent(), "MinG/lang");
 		file.mkdirs();
 		String path = MinG.class.getPackage().getName().replace('.', '/') + "/resources/lang";
-//		System.out.println("MinG lang path:  " + path);
 		ResourceExtractor.extractResources(path, file.toPath(), true, false);
 	}
 	
@@ -51,8 +53,22 @@ public class MinG {
 		if(!initialized) {
 			registerListeners(plugin);
 			extractResources(plugin);
+			initTimer(plugin);
 			initialized = true;
 		}
+	}
+	
+	private static int time = 0;
+	public static int getTime() {
+		return time;
+	}
+	private static void initTimer(JavaPlugin plugin) {
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				++time;
+			}
+		}.runTaskTimer(plugin, 0, 1);
 	}
 	
 	public static void guiExecute(String game, String cmd, Player player, ItemStack item, Inventory inv) {
@@ -68,6 +84,7 @@ public class MinG {
 	
 	
 	public static void resetPlayer(Player player, JavaPlugin plugin) {
+		player.setDisplayName(player.getName());
 		player.getInventory().clear();
 		for(PotionEffect effect : player.getActivePotionEffects()) {
 			player.removePotionEffect(effect.getType());
@@ -80,6 +97,18 @@ public class MinG {
 		BossBarManager.removePlayer(player);
 		player.setDisplayName(player.getName());
 		player.removeMetadata("ming_team", plugin);
+		setLastAttacker(player, null);
+	}
+	
+	
+	
+	private static Map<UUID, Player> lastAttacker = new HashMap<UUID, Player>();
+	
+	public static void setLastAttacker(Player player, Player attacker) {
+		lastAttacker.put(player.getUniqueId(), attacker);
+	}
+	public static Player getLastAttacker(Player player) {
+		return lastAttacker.get(player.getUniqueId());
 	}
 	
 }

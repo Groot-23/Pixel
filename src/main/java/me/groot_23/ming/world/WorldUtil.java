@@ -25,6 +25,10 @@ public class WorldUtil {
 		Bukkit.unloadWorld(world, false);
 	}
 	
+	public static void deleteWorld(World world) {
+		deleteWorld(world.getName());
+	}
+	
 	public static void deleteWorld(String name) {
 		if(worldExists(name)) {
 			World world = Bukkit.getWorld(name);

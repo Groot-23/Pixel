@@ -32,17 +32,19 @@ public class LanguageHolder {
 			throw new IllegalArgumentException("The given file is not a directory!");
 		}
 		for(File f : langFolder.listFiles()) {
-			Utf8Config cfg = new Utf8Config();
-			try {
-				cfg.load(f);
-				languages.put(FilenameUtils.removeExtension(f.getName()), cfg);
-				
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (InvalidConfigurationException e) {
-				e.printStackTrace();
+			if(f.getName().endsWith(".yml")) {
+				Utf8Config cfg = new Utf8Config();
+				try {
+					cfg.load(f);
+					languages.put(FilenameUtils.removeExtension(f.getName()), cfg);
+					
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (InvalidConfigurationException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}

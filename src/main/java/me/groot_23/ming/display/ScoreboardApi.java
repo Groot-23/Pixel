@@ -9,6 +9,9 @@ import org.bukkit.scoreboard.Team;
 public class ScoreboardApi {
 	
 	public static void init(Objective objective, String... lines) {
+		if(objective == null) {
+			return;
+		}
 		Scoreboard board = objective.getScoreboard();
 		for(String entry : board.getEntries()) {
 			board.resetScores(entry);
