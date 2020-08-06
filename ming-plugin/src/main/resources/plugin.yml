@@ -1,0 +1,6 @@
+name: MinG
+version: 0.2
+author: Groot_23
+main: me.groot_23.ming.MinGPlugin
+depend: [NBTAPI]
+api-version: 1.14
