@@ -1,5 +1,7 @@
 package me.groot_23.ming.world;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import org.bukkit.Bukkit;
@@ -9,15 +11,18 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.groot_23.ming.game.Game;
+import me.groot_23.ming.util.Utf8Config;
 
 public class Arena {
 
 	protected JavaPlugin plugin;
 	protected Game game;
+	protected Utf8Config config;
 
 	protected World world;
 	protected Location midSpawn;
@@ -33,7 +38,7 @@ public class Arena {
 		this.game = game;
 		this.world = world;
 		this.mapName = mapName;
-		this.plugin = game.mode.getPlugin();
+		this.plugin = game.plugin;
 		readConfig();
 	}
 
@@ -75,10 +80,35 @@ public class Arena {
 		}, 1);
 	}
 
+	public File getConfigFile() {
+		return new File(plugin.getDataFolder(), "worlds.yml");
+	}
+	
+	public ConfigurationSection getConfig() {
+		if(config == null) {
+			config = new Utf8Config();
+			try {
+				config.load(getConfigFile());
+			} catch (IOException | InvalidConfigurationException e) {
+				e.printStackTrace();
+			}
+		}
+		ConfigurationSection sec = config.getConfigurationSection(mapName);
+		return sec != null ? sec : config.createSection(mapName);
+	}
+	
+	public void saveConfig() {
+		try {
+			config.save(getConfigFile());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	protected void readConfig() {
-		ConfigurationSection section = game.miniGame.worldProvider.getWorldSection(mapName); // plugin.getConfig().getConfigurationSection("worlds." + mapName);
+		ConfigurationSection section = getConfig();
 		if (section == null) {
-			throw new RuntimeException("[MinG] " + plugin.getName() + "config does not contain '" + "worlds." + mapName + "'");
+			throw new RuntimeException(plugin.getName() + "world config does not contain '" + mapName + "'");
 		}
 		builder = section.getString("builder");
 		minPlayers = section.getInt("minPlayers");

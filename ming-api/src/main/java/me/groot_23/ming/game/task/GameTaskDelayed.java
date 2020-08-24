@@ -51,7 +51,7 @@ public abstract class GameTaskDelayed {
 		active = true;
 		start = MinG.getTime();
 		end = start + delay;
-		runnable.runTaskLater(game.miniGame.getPlugin(), delay);
+		runnable.runTaskLater(game.plugin, delay);
 	}
 	public void start() {
 		start(delay);

@@ -34,7 +34,7 @@ public abstract class GameTaskRepeated {
 		active = true;
 		onStart();
 //		System.out.println("Started UI runnable!");
-		runnable.runTaskTimer(game.miniGame.getPlugin(), 0, tickRate);
+		runnable.runTaskTimer(game.plugin, 0, tickRate);
 	}
 	
 	public void stop() {

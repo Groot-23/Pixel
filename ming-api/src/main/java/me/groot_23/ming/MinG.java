@@ -5,10 +5,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.WorldCreator;
+import org.bukkit.WorldType;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
@@ -20,12 +26,17 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import me.groot_23.ming.game.Game;
+import me.groot_23.ming.game.GameCreator;
 import me.groot_23.ming.gui.GuiItem;
 import me.groot_23.ming.gui.GuiRunnable;
 import me.groot_23.ming.kits.Kit;
 import me.groot_23.ming.language.LanguageManager;
+import me.groot_23.ming.util.Tuple;
 import me.groot_23.ming.util.Utf8Config;
 import me.groot_23.ming.world.Arena;
+import me.groot_23.ming.world.ArenaCreator;
+import me.groot_23.ming.world.ChunkGeneratorVoid;
+import me.groot_23.ming.world.WorldUtil;
 
 public class MinG {
 
@@ -38,6 +49,7 @@ public class MinG {
 	private static String defaultLanguage;
 	private static LanguageManager langManager;
 	private static int time;
+	private static Random random = new Random();
 	
 	static void init(JavaPlugin plugin) {
 		MinG.plugin = plugin;
@@ -49,6 +61,7 @@ public class MinG {
 		defaultLanguage = plugin.getConfig().getString("default_language", "en_us");
 		langManager = new LanguageManager(defaultLanguage);
 		langManager.addLanguageHolder(new File(plugin.getDataFolder(), "lang"));
+		WorldProvider.cleanWorldFolders();
 		time = 0;
 		new BukkitRunnable() {
 			public void run() {
@@ -57,12 +70,77 @@ public class MinG {
 		}.runTaskTimer(plugin, 1, 1);
 	}
 	
-	public static void registerArena(Arena arena) {
-		arenas.put(arena.getWorld().getUID(), arena);
+	public static JavaPlugin getPlugin() {
+		return plugin;
 	}
-	public static void removeArena(UUID id) {
-		arenas.remove(id);
+	
+	public static class WorldProvider {
+		public static final String WORLD_PREFIX = "minigame_world_";
+
+		public static void cleanWorldFolders() {
+			for (String s : Bukkit.getWorldContainer().list()) {
+				if (s.startsWith(WORLD_PREFIX)) {
+					WorldUtil.deleteWorld(s);
+				}
+			}
+		}
+
+		public static World provideWorld(String name) {
+			World world = null;
+			if (WorldUtil.worldExists(name)) {
+				for (int i = 0;; ++i) {
+					String worldName = WORLD_PREFIX + name + i;
+					if (Bukkit.getWorld(worldName) == null) {
+						WorldUtil.copyWorld(name, worldName);
+						world = Bukkit.createWorld(getWorldCreator(worldName));
+						world.setAutoSave(false);
+						return world;
+					}
+				}
+			}
+			return null;
+		}
+
+		public static Tuple<World, String> provideWorld(List<String> names) {
+			String name = names.get(random.nextInt(names.size()));
+			World world = provideWorld(name);
+			return new Tuple<World, String>(world, name);
+		}
+
+		public static Arena provideArena(String name, Game game, ArenaCreator creator) {
+			World world = provideWorld(name);
+			if (world != null) {
+				Arena arena = creator.createArena(game, world, name);
+				arenas.put(arena.getWorld().getUID(), arena);
+				return arena;
+			}
+			return null;
+		}
+
+		public static Arena provideArena(List<String> names, Game game, ArenaCreator creator) {
+			Tuple<World, String> t = provideWorld(names);
+			if (t != null) {
+				Arena arena = creator.createArena(game, t.x, t.y);
+				arenas.put(arena.getWorld().getUID(), arena);
+				return arena;
+			}
+			return null;
+		}
+		
+		public static void removeWorld(World world) {
+			arenas.remove(world.getUID());
+			WorldUtil.deleteWorld(world);
+		}
+		
+		public static WorldCreator getWorldCreator(String worldName) {
+			WorldCreator creator = new WorldCreator(worldName);
+			creator.generator(new ChunkGeneratorVoid());
+			creator.generateStructures(false);
+			creator.type(WorldType.FLAT);
+			return creator;
+		}
 	}
+	
 	public static Arena getArena(UUID id) {
 		return arenas.get(id);
 	}
@@ -70,6 +148,114 @@ public class MinG {
 		Arena arena = getArena(id);
 		return arena != null ? arena.getGame() : null;
 	}
+	
+	public static class GameProvider {
+		private static Map<String, Map<String, Game>> currentGames = new HashMap<String, Map<String,Game>>();
+		private static Map<String, GameCreator> gameCreators = new HashMap<String, GameCreator>();
+		
+		public static enum ProvideType {
+			
+			RANDOM, MOST_PLAYERS, LEAST_PLAYERS;
+			
+			public String chooseOption(Map<String, Game> games) {
+				if(this == RANDOM) {
+					String[] options = games.keySet().toArray(new String[games.size()]);
+					return options[random.nextInt(options.length)];
+				} 
+				else if(this == MOST_PLAYERS) {
+					String option = null;
+					int most = -1;
+					for(Iterator<Map.Entry<String, Game>> it = games.entrySet().iterator(); it.hasNext();) {
+						Map.Entry<String, Game> current = it.next();
+						int players = (current.getValue() != null) ? current.getValue().players.size() : 0;
+						if(players > most) {
+							most = players;
+							option = current.getKey();
+						}
+					}
+					return option;
+				}
+				else if(this == LEAST_PLAYERS) {
+					String option = null;
+					int least = 1000;
+					for(Iterator<Map.Entry<String, Game>> it = games.entrySet().iterator(); it.hasNext();) {
+						Map.Entry<String, Game> current = it.next();
+						int players = (current.getValue() != null) ? current.getValue().players.size() : 0;
+						if(players < least) {
+							least = players;
+							option = current.getKey();
+						}
+					}
+					return option;
+				}
+				// ERROR
+				return null;
+			}
+		}
+
+		public static Game provideGame(String game, String option) {
+			if(!currentGames.containsKey(game)) {
+				plugin.getLogger().warning("Can not provide the unregistered game '" + game + "'");
+				return null;
+			}
+			Map<String, Game> games = currentGames.get(game);
+			if(!games.containsKey(option)) {
+				plugin.getLogger().warning("Can not provide the game '" + game + "' with unregistered option '" + option + "'");
+				return null;
+			}
+			Game g = games.get(option);
+			if(g == null) {
+				g = gameCreators.get(game).createGame(option);
+				games.put(option, g);
+			}
+			return g;
+		}
+
+		public static Game provideGame(String game, ProvideType type) {
+			if(!currentGames.containsKey(game)) {
+				plugin.getLogger().warning("Can not provide the unregistered game '" + game + "'");
+				return null;
+			}
+			Map<String, Game> games = currentGames.get(game);
+			if(games.size() == 0) {
+				plugin.getLogger().warning("Can not provide the game '" + game + "' without any registered option");
+				return null;
+			}
+			String option = type.chooseOption(games);
+			Game g = games.get(option);
+			if(g == null) {
+				g = gameCreators.get(game).createGame(option);
+				games.put(option, g);
+			}
+			return g;
+		}
+			
+		public static void stopJoin(Game game) {
+			Game current = currentGames.get(game.name).get(game.option);
+			if(game == current) {
+				currentGames.get(game.name).put(game.option, null);
+			}
+		}
+		
+		public static void stopGame(Game game) {
+			stopJoin(game);
+			game.onEnd();
+		}
+	}
+
+	public static void registerGameOption(String game, String option) {
+		if(!GameProvider.currentGames.containsKey(game)) {
+			plugin.getLogger().warning("Can not register option for the unregistered game '" + game + "'");
+			return;
+		}
+		GameProvider.currentGames.get(game).put(option, null);
+	}
+	
+	public static void registerGame(String name, GameCreator creator) {
+		GameProvider.gameCreators.put(name, creator);
+		GameProvider.currentGames.put(name, new HashMap<String, Game>());
+	}
+	
 	
 	public static void registerGuiRunnable(String name, GuiRunnable runnable) {
 		guiRunnables.put(name, runnable);

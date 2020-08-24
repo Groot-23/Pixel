@@ -4,33 +4,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 import me.groot_23.ming.MinG;
-import me.groot_23.ming.player.PlayerUtil;
 
 public class GameTeam {
 
 	// currently unused because of the char limit 16 of scoreboard names!
 	private static final String SCOREBOARD_TEAM_NAME = "";
 
-	private JavaPlugin plugin;
-	private ChatColor color;
+	private DyeColor color;
 	private List<Player> players = new ArrayList<Player>();
 
-	public GameTeam(JavaPlugin plugin, ChatColor color) {
-		this.plugin = plugin;
+	public GameTeam(DyeColor color) {
 		this.color = color;
 	}
 	
-	public ChatColor getColor() {
+	public DyeColor getColor() {
 		return color;
 	}
 	
@@ -45,7 +42,7 @@ public class GameTeam {
 	public void addPlayer(Player player) {
 		players.add(player);
 		updateScoreboardTeams();
-		player.setMetadata("ming_team", new FixedMetadataValue(plugin, color.name().toLowerCase()));
+		player.setMetadata("ming_team", new FixedMetadataValue(MinG.getPlugin(), color.name().toLowerCase()));
 	}
 
 	public void removePlayer(Player player) {
@@ -109,38 +106,46 @@ public class GameTeam {
 
 	private void initTeamData(Team team) {
 		team.setAllowFriendlyFire(false);
-		team.setPrefix(color + "[" + color.name() + "] "); 
+		team.setPrefix(toChatColor(color) + "[" + color.name() + "] "); 
 	}
 	
-	public static ChatColor getTeamOfPlayer(Player player, JavaPlugin plugin) {
+	public static DyeColor getTeamOfPlayer(Player player) {
 		List<MetadataValue> values = player.getMetadata("ming_team");
 		if(values != null) {
 			for(MetadataValue val : values) {
-				if(val.getOwningPlugin() == plugin) {
-					return ChatColor.valueOf(val.asString().toUpperCase());
+				if(val.getOwningPlugin() == MinG.getPlugin()) {
+					return DyeColor.valueOf(val.asString().toUpperCase());
 				}
 			}
 		}
 		return null;
 	}
 	
-	public static Material woolFromColor(ChatColor color) {
+	public static ChatColor toChatColor(DyeColor color) {
 		switch(color) {
-		case BLUE: return Material.BLUE_WOOL;
-		case RED: return Material.RED_WOOL;
-		case YELLOW: return Material.YELLOW_WOOL;
-		case GREEN: return Material.GREEN_WOOL;
-		case WHITE: return Material.WHITE_WOOL;
-		case AQUA: return Material.LIGHT_BLUE_WOOL;
-		case DARK_PURPLE: return Material.PURPLE_WOOL;
-		case LIGHT_PURPLE: return Material.MAGENTA_WOOL;
-		case DARK_GRAY: return Material.GRAY_WOOL;
-		case GRAY: return Material.LIGHT_GRAY_WOOL;
-		case DARK_AQUA: return Material.CYAN_WOOL;
-		case BLACK: return Material.BLACK_WOOL;
-		
+		case BLACK: return ChatColor.BLACK;
+		case BLUE: return ChatColor.DARK_BLUE;
+		case BROWN: return ChatColor.GOLD;
+		case CYAN: return ChatColor.AQUA;
+		case GRAY: return ChatColor.DARK_GRAY;
+		case GREEN: return ChatColor.DARK_GREEN;
+		case LIGHT_BLUE: return ChatColor.BLUE;
+		case LIGHT_GRAY: return ChatColor.GRAY;
+		case LIME: return ChatColor.GREEN;
+		case MAGENTA: return ChatColor.LIGHT_PURPLE;
+		case ORANGE: return ChatColor.GOLD;
+		case PINK: return ChatColor.LIGHT_PURPLE;
+		case PURPLE: return ChatColor.DARK_PURPLE;
+		case RED: return ChatColor.RED;
+		case WHITE: return ChatColor.WHITE;
+		case YELLOW: return ChatColor.YELLOW;
 		default: return null;
 		}
+		
+	}
+	
+	public static Material toWool(DyeColor color) {
+		return Material.getMaterial(color.name() + "_WOOL");
 	}
 
 }

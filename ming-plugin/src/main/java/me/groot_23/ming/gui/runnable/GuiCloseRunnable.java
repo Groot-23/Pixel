@@ -4,7 +4,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import me.groot_23.ming.MiniGame;
 import me.groot_23.ming.gui.GuiRunnable;
 
 public class GuiCloseRunnable implements GuiRunnable {

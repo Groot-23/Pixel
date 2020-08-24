@@ -8,7 +8,6 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import de.tr7zw.nbtapi.NBTItem;
 import me.groot_23.ming.MinG;
-import me.groot_23.ming.MiniGame;
 import me.groot_23.ming.gui.GuiRunnable;
 import me.groot_23.ming.kits.Kit;
 

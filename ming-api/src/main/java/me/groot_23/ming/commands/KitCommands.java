@@ -18,7 +18,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.groot_23.ming.MinG;
-import me.groot_23.ming.MiniGame;
 import me.groot_23.ming.kits.Kit;
 import me.groot_23.ming.language.LanguageHolder;
 import me.groot_23.ming.language.LanguageManager;

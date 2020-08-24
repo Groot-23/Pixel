@@ -12,7 +12,6 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.craftbukkit.libs.org.apache.commons.io.FilenameUtils;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import me.groot_23.ming.MiniGame;
 import me.groot_23.ming.language.LanguageHolder;
 import me.groot_23.ming.language.LanguageManager;
 import me.groot_23.ming.util.Utf8Config;

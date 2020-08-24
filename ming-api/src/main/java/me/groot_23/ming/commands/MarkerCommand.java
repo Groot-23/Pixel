@@ -11,7 +11,6 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import me.groot_23.ming.MiniGame;
 import me.groot_23.ming.world.WorldMarker;
 
 public class MarkerCommand implements CommandExecutor, TabCompleter {

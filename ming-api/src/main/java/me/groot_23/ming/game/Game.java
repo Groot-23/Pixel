@@ -15,52 +15,36 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import me.groot_23.ming.MiniGame;
+import me.groot_23.ming.MinG;
 import me.groot_23.ming.game.task.GameTaskManager;
 import me.groot_23.ming.player.team.TeamHandler;
 import me.groot_23.ming.world.Arena;
 
 public abstract class Game {
 	
-	
-	public final MiniGame miniGame;
-	public final MiniGameMode mode;
-	public final Arena arena;
+	public Arena arena;
 	public final JavaPlugin plugin;
+	
+	public final String option;
+	public final String name;
 	
 	public final GameTaskManager taskManager;
 	
-	public final TeamHandler teamHandler;
+	public TeamHandler teamHandler;
 	
 	public final int id;
 	private static int currentID = 0;
 
 	
-	public Game(MiniGameMode mode, String worldGroup) {
+	public Game(String name, String option, JavaPlugin plugin, int teamSize) {
 		this.id = currentID++;
-		this.mode = mode;
-		this.miniGame = mode.miniGame;
-		this.plugin = mode.plugin;
+		this.plugin = plugin;
 		this.allowJoin = true;
-		arena = miniGame.worldProvider.provideArena(this, miniGame.worldProvider.getWorldGroup(worldGroup), 100);
-		teamHandler = new TeamHandler(mode, arena.getMaxPlayers());
+		this.name = name;
+		this.option = option;
 		taskManager = new GameTaskManager();
 	}
 	
-	public Game(MiniGameMode mode, String[] possibleMaps) {
-		this.id = currentID++;
-		this.mode = mode;
-		this.miniGame = mode.miniGame;
-		this.allowJoin = true;
-		this.plugin = mode.plugin;
-		arena = miniGame.worldProvider.provideArena(this, possibleMaps, 100);
-		teamHandler = new TeamHandler(mode, arena.getMaxPlayers());
-		taskManager = new GameTaskManager();
-	}
-	
-	public Arena createArena(World world, String map) {
-		return new Arena(this, world, map);
-	}
 	
 	protected boolean allowJoin;
 	public final List<Player> players = new ArrayList<Player>();
@@ -81,11 +65,11 @@ public abstract class Game {
 	
 	public void stopJoin() {
 		allowJoin = false;
-		mode.gameProvider.stopJoin(this);
+		MinG.GameProvider.stopJoin(this);
 	}
 	
 	public void endGame() {
-		mode.gameProvider.stopGame(this);
+		MinG.GameProvider.stopGame(this);
 	}
 	
 	public void onJoin(Player player) {}
@@ -109,7 +93,7 @@ public abstract class Game {
 	public void onInteractAtEntity(PlayerInteractAtEntityEvent event) {}
 	
 	public void onEnd() {
-		miniGame.worldProvider.removeWorld(arena.getWorld());
+		MinG.WorldProvider.removeWorld(arena.getWorld());
 		taskManager.removeAllTasks();
 	}
 }

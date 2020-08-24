@@ -1,5 +1,6 @@
 package me.groot_23.ming.listener;
 
+import org.apache.logging.log4j.core.net.Priority;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,6 +13,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerPickupArrowEvent;
+import org.bukkit.util.BoundingBox;
 
 import me.groot_23.ming.MinG;
 
@@ -51,6 +54,14 @@ public class SpectatorListener implements Listener {
 	}
 	
 	@EventHandler(priority=EventPriority.HIGHEST)
+	public void onArrowPickUp(PlayerPickupArrowEvent event) {
+		if(MinG.isSpectator(event.getPlayer())) {
+			// deprecated because it extends the deprecated PlayerPickUpItemEvent. There seems to be no alternative
+			event.setCancelled(true);
+		}
+	}
+	
+	@EventHandler(priority=EventPriority.HIGHEST)
 	public void onInteract(PlayerInteractEvent event) {
 		if(MinG.isSpectator(event.getPlayer())) {
 			event.setCancelled(true);
@@ -70,9 +81,9 @@ public class SpectatorListener implements Listener {
 			boolean allow = false;
 			for(Player p : l.getWorld().getPlayers()) {
 				Location pl = p.getLocation();
-				if(pl.getX() > l.getBlockX() - 1 && pl.getX() < l.getBlockX() + 1
-						&&pl.getZ() > l.getBlockZ() - 1 && pl.getZ() < l.getBlockZ() + 1
-						&&pl.getY() > l.getBlockY() - 2 && pl.getY() < l.getBlockY() + 1)
+				BoundingBox bb = p.getBoundingBox();
+				if(bb.overlaps(new BoundingBox(l.getBlockX(), l.getBlockY(), l.getBlockZ(), l.getBlockX() + 1, l.getBlockY() + 1,
+				l.getBlockZ() + 1)))
 				{
 					if(MinG.isSpectator(p)) {
 						allow = true;
