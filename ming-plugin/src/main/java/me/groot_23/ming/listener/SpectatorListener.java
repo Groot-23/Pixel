@@ -1,6 +1,7 @@
 package me.groot_23.ming.listener;
 
 import org.apache.logging.log4j.core.net.Priority;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,6 +14,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupArrowEvent;
 import org.bukkit.util.BoundingBox;
 
@@ -20,6 +22,15 @@ import me.groot_23.ming.MinG;
 
 public class SpectatorListener implements Listener {
 
+	@EventHandler
+	public void onJoin(PlayerJoinEvent event) {
+		for(Player other : Bukkit.getOnlinePlayers()) {
+			if(MinG.isSpectator(other)) {
+				event.getPlayer().hidePlayer(MinG.getPlugin(), other);
+			}
+		}
+	}
+	
 	@EventHandler(priority=EventPriority.HIGHEST)
 	public void onDamage(EntityDamageByEntityEvent event) {
 		if(event.getDamager() instanceof Player) {
@@ -80,7 +91,6 @@ public class SpectatorListener implements Listener {
 			Location l = event.getBlock().getLocation();
 			boolean allow = false;
 			for(Player p : l.getWorld().getPlayers()) {
-				Location pl = p.getLocation();
 				BoundingBox bb = p.getBoundingBox();
 				if(bb.overlaps(new BoundingBox(l.getBlockX(), l.getBlockY(), l.getBlockZ(), l.getBlockX() + 1, l.getBlockY() + 1,
 				l.getBlockZ() + 1)))

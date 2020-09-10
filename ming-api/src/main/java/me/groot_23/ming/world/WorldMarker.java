@@ -35,6 +35,7 @@ public class WorldMarker {
 		for(ArmorStand e : world.getEntitiesByClass(ArmorStand.class)) {
 			if(e.getCustomName().equals(MARKER_PREFIX + markerName)) {
 				e.setVisible(!invisible);
+				e.setMarker(invisible);
 			}
 		}
 	}

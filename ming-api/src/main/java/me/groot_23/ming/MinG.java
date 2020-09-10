@@ -12,6 +12,7 @@ import java.util.Random;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.WorldType;
@@ -28,6 +29,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import me.groot_23.ming.game.Game;
 import me.groot_23.ming.game.GameCreator;
 import me.groot_23.ming.gui.GuiItem;
+import me.groot_23.ming.gui.GuiItem.UseAction;
 import me.groot_23.ming.gui.GuiRunnable;
 import me.groot_23.ming.kits.Kit;
 import me.groot_23.ming.language.LanguageManager;
@@ -150,7 +152,7 @@ public class MinG {
 	}
 	
 	public static class GameProvider {
-		private static Map<String, Map<String, Game>> currentGames = new HashMap<String, Map<String,Game>>();
+		public static final Map<String, Map<String, Game>> currentGames = new HashMap<String, Map<String,Game>>();
 		private static Map<String, GameCreator> gameCreators = new HashMap<String, GameCreator>();
 		
 		public static enum ProvideType {
@@ -284,6 +286,7 @@ public class MinG {
 			player.setCollidable(false);
 			player.setInvulnerable(true);
 			player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 20 * 10000, 0, false, false, false));
+			setSpectatorInv(player);
 			for(Player other : otherPlayers) {
 				if(player == other) continue;
 				if(isSpectator(other)) {
@@ -298,8 +301,10 @@ public class MinG {
 			player.setCollidable(true);
 			player.setInvulnerable(false);
 			player.removePotionEffect(PotionEffectType.INVISIBILITY);
+			player.getInventory().clear();
 			for(Player other : otherPlayers) {
 				if(player == other) continue;
+				if(MinG.isSpectator(other)) player.hidePlayer(plugin, other);
 				other.showPlayer(plugin, player);
 			}
 		}
@@ -307,6 +312,13 @@ public class MinG {
 	public static boolean isSpectator(Player player) {
 		Boolean b = spectators.get(player.getUniqueId());
 		return b != null ? b : false;
+	}
+	
+	public static void setSpectatorInv(Player player) {
+		player.getInventory().clear();
+		GuiItem tp = new GuiItem(Material.COMPASS);
+		tp.addActionUseRunnable("ming_spectator_tp", UseAction.RIGHT_CLICK);
+		player.getInventory().setItem(0, tp.getItem());
 	}
 	
 	

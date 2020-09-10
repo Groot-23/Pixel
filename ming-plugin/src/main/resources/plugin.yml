@@ -4,3 +4,10 @@ author: Groot_23
 main: me.groot_23.ming.MinGPlugin
 depend: [NBTAPI]
 api-version: 1.14
+
+commands:
+  mjoin:
+    usage: /<command> <game> <option>
+  toggle_spectator:
+    usage: /<command>
+  

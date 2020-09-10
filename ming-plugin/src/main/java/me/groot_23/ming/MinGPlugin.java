@@ -2,12 +2,15 @@ package me.groot_23.ming;
 
 import java.io.File;
 
-import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import me.groot_23.ming.commands.JoinCommand;
+import me.groot_23.ming.commands.ToggleSpectator;
 import me.groot_23.ming.gui.runnable.GuiCloseRunnable;
 import me.groot_23.ming.gui.runnable.KitGuiRunnable;
+import me.groot_23.ming.gui.runnable.SpectatorTpRunnable;
 import me.groot_23.ming.gui.runnable.TeamSelectorRunnable;
+import me.groot_23.ming.gui.runnable.TpToPlayerRunnable;
 import me.groot_23.ming.listener.GameListener;
 import me.groot_23.ming.listener.GuiListener;
 import me.groot_23.ming.listener.SpectatorListener;
@@ -26,6 +29,7 @@ public class MinGPlugin extends JavaPlugin {
 //		ming = new MinG(this);
 		registerListeners();
 		registerGuiRunnables();
+		registerCommands();
 //		getServer().getServicesManager().register(MinGApi.class, ming, this, ServicePriority.Normal);
 	}
 	
@@ -46,5 +50,14 @@ public class MinGPlugin extends JavaPlugin {
 		MinG.registerGuiRunnable("ming_kit_selector", new KitGuiRunnable());
 		MinG.registerGuiRunnable("ming_gui_close", new GuiCloseRunnable());
 		MinG.registerGuiRunnable("ming_team_selector", new TeamSelectorRunnable());
+		MinG.registerGuiRunnable("ming_tp_to_player", new TpToPlayerRunnable());
+		MinG.registerGuiRunnable("ming_spectator_tp", new SpectatorTpRunnable());
+	}
+	
+	private void registerCommands() {
+		getCommand("toggle_spectator").setExecutor(new ToggleSpectator());
+		getCommand("toggle_spectator").setPermission("ming.toggle_spectator");
+		getCommand("mjoin").setExecutor(new JoinCommand());
+		getCommand("mjoin").setTabCompleter(new JoinCommand());
 	}
 }

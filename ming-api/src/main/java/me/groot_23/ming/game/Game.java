@@ -17,6 +17,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import me.groot_23.ming.MinG;
 import me.groot_23.ming.game.task.GameTaskManager;
+import me.groot_23.ming.player.PlayerUtil;
 import me.groot_23.ming.player.team.TeamHandler;
 import me.groot_23.ming.world.Arena;
 
@@ -93,6 +94,9 @@ public abstract class Game {
 	public void onInteractAtEntity(PlayerInteractAtEntityEvent event) {}
 	
 	public void onEnd() {
+		for(Player p : players) {
+			PlayerUtil.resetPlayer(p);
+		}
 		MinG.WorldProvider.removeWorld(arena.getWorld());
 		taskManager.removeAllTasks();
 	}

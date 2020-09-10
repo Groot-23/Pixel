@@ -50,6 +50,7 @@ public class PlayerUtil {
 		player.setLevel(0);
 		BossBarManager.removePlayer(player);
 		player.removeMetadata("ming_team", MinG.getPlugin());
+		player.setFireTicks(0);
 		MinG.setSpectator(player, false);
 		showToWorld(player);
 		setLastAttacker(player, null);

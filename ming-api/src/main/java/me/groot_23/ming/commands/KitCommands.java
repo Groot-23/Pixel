@@ -8,9 +8,7 @@ import java.util.List;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.craftbukkit.libs.org.apache.commons.io.FilenameUtils;
@@ -20,23 +18,19 @@ import org.bukkit.plugin.java.JavaPlugin;
 import me.groot_23.ming.MinG;
 import me.groot_23.ming.kits.Kit;
 import me.groot_23.ming.language.LanguageHolder;
-import me.groot_23.ming.language.LanguageManager;
 import me.groot_23.ming.util.Utf8Config;
 
-public class KitCommands implements CommandExecutor, TabCompleter {
+public class KitCommands extends CommandBase {
 	
 	private File kitFile;
 	private Utf8Config cfg;
 	private LanguageHolder lang;
 	private String kitGroup;
-	private String permission;
 	
 	public KitCommands(JavaPlugin plugin, LanguageHolder lang, File kitFile,
 			String kitGroup, String cmdName, String permission) {
-		plugin.getCommand(cmdName).setExecutor(this);
-		plugin.getCommand(cmdName).setTabCompleter(this);
+		super(plugin, cmdName, permission);
 		
-		this.permission = permission;
 		this.kitFile = kitFile;
 		this.cfg = new Utf8Config();
 		try {
@@ -49,23 +43,7 @@ public class KitCommands implements CommandExecutor, TabCompleter {
 	}
 	
 	@Override
-	public List<String> onTabComplete(CommandSender arg0, Command arg1, String arg2, String[] args) {
-		return tabComplete(args);
-	}
-
-	@Override
-	public boolean onCommand(CommandSender sender, Command arg1, String arg2, String[] args) {
-		if(permission == null || sender.hasPermission(permission)) {
-			execute(sender, args);
-		} else {
-			sender.sendMessage(ChatColor.RED + "You don't have the required permission to execute this command: " + permission);
-		}
-
-		return true;
-	}
-	
-	
-	public List<String> tabComplete(String[] args) {
+	public List<String> tabComplete(CommandSender sender, Command cmd, String label, String[] args) {
 		List<String> list = new ArrayList<String>();
 		if(args.length == 1) {
 			String[] modes = new String[] {"list", "create", "delete", "set", "get", "name", "description"};
@@ -103,33 +81,44 @@ public class KitCommands implements CommandExecutor, TabCompleter {
 		}
 		return list;
 	}
-	
-	public void execute(CommandSender sender, String[] args) {
+
+	@Override
+	public boolean execute(CommandSender sender, Command cmd, String label, String[] args) {
+		if(args.length == 0) return false;
 		if(args[0].equals("list")) {
 			list(sender);
-		} else if(args[0].equals("create")) {
+			return true;
+		} else if(args.length == 3 && args[0].equals("create")) {
 			create(sender, args[1], args[2]);
-		} else if(args[0].equals("delete")) {
+			return true;
+		} else if(args.length == 2 && args[0].equals("delete")) {
 			delete(sender, args[1]);
-		} else if(args[0].equals("set")) {
+			return true;
+		} else if(args.length == 2 && args[0].equals("set")) {
 			set((Player)sender, args[1]);
-		} else if(args[0].equals("get")) {
+			return true;
+		} else if(args.length == 2 && args[0].equals("get")) {
 			get((Player)sender, args[1]);
-		} else if(args[0].equals("name")) {
+			return true;
+		} else if(args.length >= 4 && args[0].equals("name")) {
 			String val = args[3];
 			for(int i = 4; i < args.length; i++) {
 				val += " " + args[i];
 			}
 			name(args[1], args[2], val);
-		} else if(args[0].equals("description")) {
+			return true;
+		} else if(args.length >= 4 && args[0].equals("description")) {
 			String val = args[3];
 			for(int i = 4; i < args.length; i++) {
 				val += " " + args[i];
 			}
 			description(args[1], args[2], val);
+			return true;
 		}
+		return false;
 	}
-
+	
+	
 	public void get(Player sender, String name) {
 		Kit kit = MinG.getKit(kitGroup, name);
 		if(kit != null) {

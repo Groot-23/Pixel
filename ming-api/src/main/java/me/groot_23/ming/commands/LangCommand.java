@@ -6,47 +6,25 @@ import java.util.List;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.craftbukkit.libs.org.apache.commons.io.FilenameUtils;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.groot_23.ming.language.LanguageHolder;
-import me.groot_23.ming.language.LanguageManager;
 import me.groot_23.ming.util.Utf8Config;
 
-public class LangCommand implements CommandExecutor, TabCompleter{
+public class LangCommand extends CommandBase {
 
-	private String permission;
 	private LanguageHolder lang;
 	
 	public LangCommand(JavaPlugin plugin, LanguageHolder lang, String cmdName, String permission) {
-		plugin.getCommand(cmdName).setExecutor(this);
-		plugin.getCommand(cmdName).setTabCompleter(this);
-		this.permission = permission;
+		super(plugin, cmdName, permission);
 		this.lang = lang;
 	}
 	
-	@Override
-	public List<String> onTabComplete(CommandSender arg0, Command arg1, String arg2, String[] args) {
-		return tabComplete(args);
-	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command arg1, String arg2, String[] args) {
-		if(permission == null || sender.hasPermission(permission)) {
-			execute(sender, args);
-		} else {
-			sender.sendMessage(ChatColor.RED + "You don't have the required permission to execute this command: " + permission);
-		}
-
-		return true;
-	}
-	
-	
-	
-	public List<String> tabComplete(String[] args) {
+	public List<String> tabComplete(CommandSender sender, Command cmd, String label, String[] args) {
 		List<String> list = new ArrayList<String>();
 		if(args.length == 1) {
 			for(String s : lang.getFolder().list()) {
@@ -65,7 +43,8 @@ public class LangCommand implements CommandExecutor, TabCompleter{
 		return list;
 	}
 	
-	public void execute(CommandSender sender, String[] args) {
+	@Override
+	public boolean execute(CommandSender sender, Command cmd, String label, String[] args) {
 		Utf8Config cfg = lang.getConfig(args[0]);
 		if(cfg != null) {
 			if(args.length > 1) {
@@ -80,11 +59,13 @@ public class LangCommand implements CommandExecutor, TabCompleter{
 					try {
 						cfg.save(lang.getFile(args[0]));
 						sender.sendMessage(ChatColor.GREEN + "Value of '" + args[1] + " was updated successfully!");
+						return true;
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
 				}
 			}
 		}
+		return false;
 	}
 }
