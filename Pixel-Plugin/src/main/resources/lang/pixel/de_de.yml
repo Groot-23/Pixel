@@ -1,0 +1,12 @@
+general:
+  player: Spieler
+  seconds: Sekunden
+  description: Beschreibung
+  items: Items
+  effects: Effekte
+
+kit:
+  selector: '&d&lKit &6&lAuswahl'
+  selected: ausgewählt
+  exit: Kit-Auswahl verlassen
+  locked: Noch nicht freigeschaltet

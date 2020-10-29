@@ -1,0 +1,17 @@
+name: Pixel
+version: 0.3
+author: Groot_23
+main: me.groot_23.pixel.PixelPlugin
+depend: [NBTAPI]
+api-version: 1.14
+
+commands:
+  mjoin:
+    usage: /<command> <game> <option>
+  toggle_spectator:
+    usage: /<command>
+  mdata:
+    usage: /<command> <player> <data id> [list | get | set] <key> <value>
+  mkit_unlock:
+    usage: /<command> <player> <group> <kit> [get | set] <true | false>
+  

@@ -1,0 +1,12 @@
+general:
+  player: "player"
+  seconds: "seconds"
+  description: "Description"
+  items: "Items"
+  effects: "Effects"
+
+kit:
+  selector: "&d&lKit &6&lSelector"
+  selected: "selected"
+  exit: Exit Kit selection
+  locked: Not unlocked
