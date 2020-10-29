@@ -37,6 +37,18 @@ public class Pixelconomy implements Economy{
 			e.printStackTrace();
 		}
 	}
+	
+	public EconomyResponse setBalance(OfflinePlayer player, double amount) {
+		double balance = getBalance(player);
+		if(amount < 0) {
+			return new EconomyResponse(balance, balance, ResponseType.FAILURE, "amount must not be negative!");
+		} else { 
+			double newBalance = amount;
+			data.set(player.getUniqueId().toString(), newBalance);
+			saveData();
+			return new EconomyResponse(balance, newBalance, ResponseType.SUCCESS, null);
+		}
+	}
 
 	@Override
 	public boolean isEnabled() {
@@ -60,7 +72,10 @@ public class Pixelconomy implements Economy{
 
 	@Override
 	public String format(double amount) {
-		return Long.toString((long)amount);
+		if(amount > 1)
+			return Long.toString((long)amount) + " " + currencyNamePlural();
+		else
+			return Long.toString((long)amount) + " " + currencyNameSingular();
 	}
 
 	@Override

@@ -1,4 +1,14 @@
 name: Pixelconomy
 version: 1.0
 author: Groot_23
-main: me.groot_23.pixelconomy.PixelconomyPlugin
+main: me.groot_23.pixel.pixelconomy.PixelconomyPlugin
+depend: [Vault]
+
+commands:
+  pecon:
+    usage: /<command> <player> [get | set | add | sub] <amount>
+    permission: pecon
+    
+permissions:
+  pecon:
+    default: false
