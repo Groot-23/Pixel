@@ -17,6 +17,7 @@ import org.bukkit.WorldType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -26,20 +27,22 @@ import me.groot_23.pixel.game.Game;
 import me.groot_23.pixel.game.GameCreator;
 import me.groot_23.pixel.gui.GuiItem;
 import me.groot_23.pixel.gui.GuiRunnable;
-import me.groot_23.pixel.gui.PixelGuiRunnables;
 import me.groot_23.pixel.gui.GuiItem.UseAction;
+import me.groot_23.pixel.gui.runnables.SpectatorTpRunnable;
 import me.groot_23.pixel.language.LanguageApi;
 import me.groot_23.pixel.util.Tuple;
 import me.groot_23.pixel.world.Arena;
 import me.groot_23.pixel.world.ArenaCreator;
 import me.groot_23.pixel.world.ChunkGeneratorVoid;
 import me.groot_23.pixel.world.WorldUtil;
+import net.milkbowl.vault.chat.Chat;
+import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.permission.Permission;
 
 public class Pixel {
 
 	private static JavaPlugin plugin;
 	private static Map<UUID, Arena> arenas;
-	private static Map<String, GuiRunnable> guiRunnables;
 	private static Map<UUID, Boolean> spectators;
 	private static int time;
 	private static Random random = new Random();
@@ -47,7 +50,6 @@ public class Pixel {
 	static void init(JavaPlugin plugin) {
 		Pixel.plugin = plugin;
 		arenas = new HashMap<UUID, Arena>();
-		guiRunnables = new HashMap<String, GuiRunnable>();
 		spectators = new HashMap<UUID, Boolean>();
 		LanguageApi.defaultLanguage = plugin.getConfig().getString("default_language", "en_us");
 		LanguageApi.addLanguageFolder(new File(plugin.getDataFolder(), "lang/minecraft"));
@@ -248,23 +250,6 @@ public class Pixel {
 	}
 	
 	
-	public static void registerGuiRunnable(String name, GuiRunnable runnable) {
-		guiRunnables.put(name, runnable);
-	}
-	public static void guiExecute(String command, Player player, ItemStack item, Inventory inventory) {
-		if(command.startsWith(GuiItem.GUI_RUNNABLE_PREFIX)) {
-			command = command.substring(GuiItem.GUI_RUNNABLE_PREFIX.length());
-			GuiRunnable runnable = guiRunnables.get(command);
-			if(runnable == null) {
-				throw new IllegalArgumentException("The guiRunnable: '" + command + "' is not registered!");
-			} else {
-				runnable.run(player, item, inventory);
-			}
-		} else {
-			player.performCommand(command);
-		}
-	}
-	
 	public static void setSpectator(Player player, boolean value) {
 		spectators.put(player.getUniqueId(), value);
 		Game game = getGame(player.getWorld().getUID());
@@ -306,12 +291,53 @@ public class Pixel {
 	public static void setSpectatorInv(Player player) {
 		player.getInventory().clear();
 		GuiItem tp = new GuiItem(Material.COMPASS);
-		tp.addActionUseRunnable(PixelGuiRunnables.SPECTATOR_TP, UseAction.RIGHT_CLICK);
+		tp.addUseRunnable(new SpectatorTpRunnable(), UseAction.RIGHT_CLICK);
 		player.getInventory().setItem(0, tp.getItem());
 	}
 	
 	
 	public static int getTime() {
 		return time;
+	}
+	
+	
+	/*
+	 * Vault wrapper:
+	 * Hook into Vault when needed and NOT on startup! This allows plugins which are 
+	 * currently not supported by Vault to add support for it and get rid of loading issues.
+	 */
+	
+	private static Economy economy = null;
+	private static Chat chat = null;
+	private static Permission permission = null;
+	
+	public static Economy getEconomy() {
+		if(economy == null) {
+			RegisteredServiceProvider<Economy> rsp = Bukkit.getServicesManager().getRegistration(Economy.class);
+			if(rsp != null) {
+				economy = rsp.getProvider();
+			}
+		}
+		return economy;
+	}
+	
+	public static Chat getChat() {
+		if(chat == null) {
+			RegisteredServiceProvider<Chat> rsp = Bukkit.getServicesManager().getRegistration(Chat.class);
+			if(rsp != null) {
+				chat = rsp.getProvider();
+			}
+		}
+		return chat;
+	}
+	
+	public static Permission getPermission() {
+		if(permission == null) {
+			RegisteredServiceProvider<Permission> rsp = Bukkit.getServicesManager().getRegistration(Permission.class);
+			if(rsp != null) {
+				permission = rsp.getProvider();
+			}
+		}
+		return permission;
 	}
  }

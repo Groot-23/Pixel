@@ -13,14 +13,13 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
-import de.tr7zw.nbtapi.NBTItem;
 import me.groot_23.pixel.gui.GuiItem;
-import me.groot_23.pixel.gui.PixelGuiRunnables;
+import me.groot_23.pixel.gui.runnables.TeamSelectorRunnable;
 
 public class TeamHandler {
 
 	
-	protected DyeColor[] colors;
+	public DyeColor[] colors;
 	protected Map<DyeColor, GameTeam> teams = new HashMap<DyeColor, GameTeam>();
 	protected Inventory teamSelector;
 	public final int numTeams;
@@ -147,11 +146,8 @@ public class TeamHandler {
 				Material wool = GameTeam.toWool(colors[i]);
 				if(wool != null) {
 					GuiItem guiItem = new GuiItem(wool);
-					guiItem.addActionClickRunnable(PixelGuiRunnables.TEAM_SELECTOR);
-					NBTItem nbt = new NBTItem(guiItem.getItem());
-					nbt.setString("ming_team", colors[i].name().toLowerCase());
-					
-					teamSelector.setItem(i, nbt.getItem());
+					guiItem.addClickRunnable(new TeamSelectorRunnable(colors[i]));
+					teamSelector.setItem(i, guiItem.getItem());
 				}
 
 			}

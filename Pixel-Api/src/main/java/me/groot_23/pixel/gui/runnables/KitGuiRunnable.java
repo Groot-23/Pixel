@@ -1,4 +1,4 @@
-package me.groot_23.pixel.gui.runnable;
+package me.groot_23.pixel.gui.runnables;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -14,12 +14,15 @@ import me.groot_23.pixel.kits.KitApi;
 
 public class KitGuiRunnable implements GuiRunnable {
 
+	private String kit, group;
+	
+	public KitGuiRunnable(String kit, String group) {
+		this.kit = kit;
+		this.group = group;
+	}
 	
 	@Override
 	public void run(Player player, ItemStack item, Inventory inv) {
-		NBTItem nbt = new NBTItem(item);
-		String group = nbt.getString("ming_kit_group");
-		String kit = nbt.getString("ming_kit");
 		if(kit != null && KitApi.getKit(group, kit) != null) {
 			// set kit
 			KitApi.setSelectedKit(player, group, kit);

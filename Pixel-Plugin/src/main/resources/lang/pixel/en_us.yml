@@ -4,9 +4,19 @@ general:
   description: "Description"
   items: "Items"
   effects: "Effects"
+  exit: Exit
+  death: "&7The player %s has died!"
+  join:  "&8[&a&l+&8] &7The player %s joined the game."
+  leave: "&8[&a&l-&8] &7The player %s left the game."
 
 kit:
   selector: "&d&lKit &6&lSelector"
   selected: "selected"
-  exit: Exit Kit selection
   locked: Not unlocked
+
+shop:
+  buy: buy
+  bought: bought
+  price: price
+  credit: credit
+  remaining: remaining

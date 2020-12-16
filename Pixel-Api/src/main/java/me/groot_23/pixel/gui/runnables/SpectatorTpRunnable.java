@@ -1,4 +1,4 @@
-package me.groot_23.pixel.gui.runnable;
+package me.groot_23.pixel.gui.runnables;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +15,6 @@ import me.groot_23.pixel.Pixel;
 import me.groot_23.pixel.game.Game;
 import me.groot_23.pixel.gui.GuiItem;
 import me.groot_23.pixel.gui.GuiRunnable;
-import me.groot_23.pixel.gui.PixelGuiRunnables;
-import me.groot_23.pixel.gui.PixelGuiRunnables;
 
 public class SpectatorTpRunnable implements GuiRunnable{
 
@@ -28,7 +26,7 @@ public class SpectatorTpRunnable implements GuiRunnable{
 			for(Player other : game.players) {
 				if(!Pixel.isSpectator(other)) {
 					GuiItem gui = new GuiItem(Material.PLAYER_HEAD);
-					gui.addActionClickRunnable(PixelGuiRunnables.TP_TO_PLAYER, ClickType.LEFT);
+					gui.addClickRunnable(new TpToPlayerRunnable(), ClickType.LEFT);
 					ItemStack head = gui.getItem();
 					SkullMeta meta = (SkullMeta) head.getItemMeta();
 					meta.setOwningPlayer(other);

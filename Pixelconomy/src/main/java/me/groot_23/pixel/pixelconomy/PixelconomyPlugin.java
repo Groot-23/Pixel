@@ -70,7 +70,7 @@ public class PixelconomyPlugin extends JavaPlugin {
 			if (args.length == 2) {
 				String[] modes = { "get", "set", "add", "sub" };
 				for (String s : modes) {
-					if(s.startsWith(args[0]))
+					if(s.startsWith(args[1]))
 						list.add(s);
 				}
 			}

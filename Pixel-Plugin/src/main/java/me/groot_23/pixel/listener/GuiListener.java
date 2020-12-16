@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import de.tr7zw.nbtapi.NBTItem;
 import de.tr7zw.nbtapi.NBTList;
 import me.groot_23.pixel.Pixel;
+import me.groot_23.pixel.gui.GuiItem;
 import me.groot_23.pixel.gui.GuiItem.UseAction;
 
 public class GuiListener implements Listener {
@@ -29,11 +30,16 @@ public class GuiListener implements Listener {
 	public void onClick(InventoryClickEvent event) {
 		if (isGuiItem(event.getCurrentItem())) {
 			event.setCancelled(true);
+			Player player = (Player) event.getWhoClicked();
+			
 			NBTItem nbt = new NBTItem(event.getCurrentItem());
-			NBTList<String> cmds = nbt.getStringList("ClickType_" + event.getClick().name());
+			NBTList<String> cmds = nbt.getStringList(GuiItem.CLICK_COMMAND + event.getClick().name());
 			for (String cmd : cmds) {
-				Player player = (Player) event.getWhoClicked();
-				Pixel.guiExecute(cmd, player, event.getCurrentItem(), event.getInventory());
+				player.performCommand(cmd);
+			}
+			NBTList<Integer> runs = nbt.getIntegerList(GuiItem.CLICK_RUNNABLE + event.getClick().name());
+			for(int run : runs) {
+				GuiItem.executeRunnable(run, player, event.getCurrentItem(), event.getClickedInventory());
 			}
 		}
 	}
@@ -62,10 +68,15 @@ public class GuiListener implements Listener {
 			}
 			if(action != null) {
 				NBTItem nbt = new NBTItem(event.getItem());
-				NBTList<String> cmds = nbt.getStringList("UseAction_" + action.name());
+				Player player = event.getPlayer();
+				
+				NBTList<String> cmds = nbt.getStringList(GuiItem.USE_COMMAND + action.name());
 				for (String cmd : cmds) {
-					Player player = event.getPlayer();
-					Pixel.guiExecute(cmd, player, event.getItem(), null);
+					player.performCommand(cmd);
+				}
+				NBTList<Integer> runs = nbt.getIntegerList(GuiItem.USE_RUNNABLE + action.name());
+				for(int run : runs) {
+					GuiItem.executeRunnable(run, player, event.getItem(), null);
 				}
 			}
 		}

@@ -1,4 +1,4 @@
-package me.groot_23.pixel.gui.runnable;
+package me.groot_23.pixel.gui.runnables;
 
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;

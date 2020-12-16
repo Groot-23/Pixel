@@ -4,9 +4,19 @@ general:
   description: Beschreibung
   items: Items
   effects: Effekte
+  exit: Verlassen
+  death: "&7Der Spieler %s ist gestorben!"
+  join:  "&8[&a&l+&8] &7Der Spieler %s hat das Spiel betreten."
+  leave: "&8[&a&l-&8] &7Der Spieler %s hat das Spiel verlasse."
 
 kit:
   selector: '&d&lKit &6&lAuswahl'
   selected: ausgewählt
-  exit: Kit-Auswahl verlassen
   locked: Noch nicht freigeschaltet
+
+shop:
+  buy: Kaufen
+  bought: gekauft
+  price: Preis
+  credit: Guthaben
+  remaining: verbleibend

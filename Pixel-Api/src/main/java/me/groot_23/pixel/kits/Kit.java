@@ -9,10 +9,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import de.tr7zw.nbtapi.NBTItem;
-import me.groot_23.pixel.Pixel;
 import me.groot_23.pixel.gui.GuiItem;
-import me.groot_23.pixel.gui.PixelGuiRunnables;
+import me.groot_23.pixel.gui.runnables.KitGuiRunnable;
 import me.groot_23.pixel.language.LanguageApi;
 import me.groot_23.pixel.util.ItemSerializer;
 import me.groot_23.pixel.util.SlotItem;
@@ -54,20 +52,17 @@ public class Kit {
 		return getDisplayName(player) + suffix;
 	}
 	
-	public ItemStack getDisplayItem(Player player) {
+	public ItemStack getDisplayItem(Player player, boolean selector, boolean suffix) {
 		
-		String displayName = getSuffixedDisplayName(player);
-		List<String> lore = initLore(player);
+		String displayName = suffix ? getSuffixedDisplayName(player) : getDisplayName(player);
+		List<String> lore = getLore(player);
 		GuiItem item = new GuiItem(material, displayName, lore);
-		item.addActionClickRunnable(PixelGuiRunnables.KIT_SELECTOR);
-		
-		NBTItem nbt = new NBTItem(item.getItem());
-		nbt.setString("ming_kit", name);
-		nbt.setString("ming_kit_group", group);
-		return nbt.getItem();
+		if(selector)
+			item.addClickRunnable(new KitGuiRunnable(name, group));
+		return item.getItem();
 	}
 	
-	private List<String> initLore(Player player) {
+	public List<String> getLore(Player player) {
 		List<String> lore = new ArrayList<String>();
 		String description = LanguageApi.getTranslation(player, "kits." + name + ".description");
 		String[] descriptions = description.split("\\n");

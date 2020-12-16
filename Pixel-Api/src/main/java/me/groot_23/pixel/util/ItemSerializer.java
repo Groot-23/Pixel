@@ -122,20 +122,8 @@ public class ItemSerializer {
 			imeta.setLore(section.getStringList("lore"));
 		}
 
-		if (section.contains("enchants")) {
-			ConfigurationSection enchants = section.getConfigurationSection("enchants");
-			for (String key : enchants.getKeys(false)) {
-				Enchantment e = Enchantment.getByKey(NamespacedKey.minecraft(key));
-				if (e == null) {
-					throw new RuntimeException("Error parsing Kits: " + "Given enchant '" + key
-							+ "' does not exist. at:" + enchants.getCurrentPath());
-				}
-				item.addUnsafeEnchantment(e, enchants.getInt(key, 1));
-			}
-		}
-
 		if (section.contains("effect")) {
-			if (item.getItemMeta() instanceof PotionMeta) {
+			if (imeta instanceof PotionMeta) {
 				PotionMeta pmeta = (PotionMeta) imeta;
 				String effect = section.getString("effect");
 				PotionType e = PotionType.valueOf(effect.toUpperCase());
@@ -162,17 +150,24 @@ public class ItemSerializer {
 		
 		item.setItemMeta(imeta);
 		
+		if (section.contains("enchants")) {
+			ConfigurationSection enchants = section.getConfigurationSection("enchants");
+			for (String key : enchants.getKeys(false)) {
+				Enchantment e = Enchantment.getByKey(NamespacedKey.minecraft(key));
+				if (e == null) {
+					throw new RuntimeException("Error parsing Kits: " + "Given enchant '" + key
+							+ "' does not exist. at:" + enchants.getCurrentPath());
+				}
+				item.addUnsafeEnchantment(e, enchants.getInt(key, 1));
+			}
+		}
+		
 		if(section.contains("skull_nbt")) {
 			if(imeta instanceof SkullMeta) {
 				NBTItem nbt = new NBTItem(item);
 				NBTContainer con = new NBTContainer("{SkullOwner:" + section.getString("skull_nbt") + "}");
 				nbt.mergeCompound(con);
-				System.out.println(con.toString());
-//				nbt.setObject("SkullOwner", con.);
-				System.out.println(nbt);
 				item = nbt.getItem();
-//				SkullMeta smeta = (SkullMeta) imeta;
-//				smeta.setOwningPlayer(Bukkit.getOfflinePlayer(UUID.fromString(section.getString("head_owner"))));
 			} else {
 				System.out.println("[MinG] [WARNING] item can't have a skull owner: " + section.getCurrentPath());
 			}
