@@ -43,6 +43,7 @@ public class JoinCommand implements CommandExecutor, TabCompleter {
 			sender.sendMessage(ChatColor.RED + "You are not a player!");
 			return true;
 		}
+		Player player = (Player)sender;
 		Game game = null;
 		if(args.length == 1) {
 			game = Pixel.GameProvider.provideGame(args[0], Pixel.GameProvider.ProvideType.MOST_PLAYERS);
@@ -51,7 +52,7 @@ public class JoinCommand implements CommandExecutor, TabCompleter {
 			game = Pixel.GameProvider.provideGame(args[0], args[1]);
 		}
 		if(game != null) {
-			game.joinPlayer((Player)sender);
+			game.joinPlayer(player);
 			return true;
 		}
 		sender.sendMessage(ChatColor.RED + "Invalid Game!");

@@ -18,7 +18,6 @@ import me.groot_23.pixel.gui.runnables.TeamSelectorRunnable;
 
 public class TeamHandler {
 
-	
 	public DyeColor[] colors;
 	protected Map<DyeColor, GameTeam> teams = new HashMap<DyeColor, GameTeam>();
 	protected Inventory teamSelector;
@@ -119,6 +118,14 @@ public class TeamHandler {
 		return false;
 	}
 	
+	public void removePlayer(Player player) {
+		DyeColor col = GameTeam.getTeamOfPlayer(player);
+		GameTeam gt = teams.get(col);
+		if(gt != null) {
+			gt.removePlayer(player);
+		}
+	}
+	
 	public List<GameTeam> getTeamsAlive() {
 		List<GameTeam> alive = new ArrayList<GameTeam>();
 		for(GameTeam team : teams.values()) {
@@ -138,6 +145,7 @@ public class TeamHandler {
 		}
 		return counter;
 	}
+	
 	
 	public Inventory getTeamSelectorInv() {
 		if(teamSelector == null) {

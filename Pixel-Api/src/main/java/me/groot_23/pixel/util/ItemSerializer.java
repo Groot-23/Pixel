@@ -2,9 +2,7 @@ package me.groot_23.pixel.util;
 
 import java.util.Iterator;
 import java.util.Map;
-import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
@@ -18,9 +16,9 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 
-import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTContainer;
 import de.tr7zw.nbtapi.NBTItem;
+import me.groot_23.pixel.Pixel;
 import me.groot_23.pixel.language.LanguageApi;
 
 public class ItemSerializer {
@@ -144,7 +142,7 @@ public class ItemSerializer {
 					}
 				}
 			} else {
-				System.out.println("[MinG] [WARNING] item can't have an effect type: " + section.getCurrentPath());
+				Pixel.getPlugin().getLogger().warning("[ItemSerializer] item can't have an effect type: " + section.getCurrentPath());
 			}
 		}
 		
@@ -169,7 +167,7 @@ public class ItemSerializer {
 				nbt.mergeCompound(con);
 				item = nbt.getItem();
 			} else {
-				System.out.println("[MinG] [WARNING] item can't have a skull owner: " + section.getCurrentPath());
+				Pixel.getPlugin().getLogger().warning("[ItemSerializer] item can't have a skull owner: " + section.getCurrentPath());
 			}
 		}
 

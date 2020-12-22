@@ -11,7 +11,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-import me.groot_23.pixel.Pixel;
 import me.groot_23.pixel.kits.Kit;
 import me.groot_23.pixel.kits.KitApi;
 

@@ -7,14 +7,19 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.projectiles.ProjectileSource;
@@ -131,6 +136,44 @@ public class GameListener implements Listener{
 		Game game = getGame(event.getPlayer().getWorld());
 		if(game != null) {
 			game.onInteractAtEntity(event);
+		}
+	}
+	
+	@EventHandler
+	public void onItemConsume(PlayerItemConsumeEvent event) {
+		Game game = getGame(event.getPlayer().getWorld());
+		if(game != null) {
+			game.onItemConsume(event);
+		}
+	}
+	
+	@EventHandler
+	public void onInventoryOpen(InventoryOpenEvent event) {
+		Game game = getGame(event.getPlayer().getWorld());
+		if(game != null) {
+			game.onInventoryOpen(event);
+		}
+	}
+	@EventHandler
+	public void onInventoryClose(InventoryCloseEvent event) {
+		Game game = getGame(event.getPlayer().getWorld());
+		if(game != null) {
+			game.onInventoryClose(event);
+		}
+	}
+	@EventHandler
+	public void onInventoryClick(InventoryClickEvent event) {
+		Game game = getGame(event.getWhoClicked().getWorld());
+		if(game != null) {
+			game.onInventoryClick(event);
+		}
+	}
+	
+	@EventHandler
+	public void onCreatureSpawn(CreatureSpawnEvent event) {
+		Game game = getGame(event.getEntity().getWorld());
+		if(game != null) {
+			game.onCreatureSpawn(event);
 		}
 	}
 }

@@ -4,8 +4,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import me.groot_23.pixel.language.LanguageApi;
-
 public class SlotItem {
 	
 	private ItemStack item;

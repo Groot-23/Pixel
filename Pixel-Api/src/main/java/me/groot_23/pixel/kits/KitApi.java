@@ -29,10 +29,15 @@ import net.md_5.bungee.api.ChatColor;
 
 public class KitApi {
 
+	private static Map<String, String> defaultKit = new HashMap<String, String>();
 	private static Map<String, List<Kit>> kits = new HashMap<String, List<Kit>>();
 	private static Map<UUID, Map<String, String>> selectedKits = new HashMap<UUID, Map<String, String>>();
 	private static Map<String, String> kitUnlockId = new HashMap<String, String>();
 
+	public static void setDefault(String group, String kit) {
+		defaultKit.put(group, kit);
+	}
+	
 	public static void registerKit(Kit kit, String kitGroup) {
 		List<Kit> list = kits.get(kitGroup);
 		if (list == null) {
@@ -62,12 +67,12 @@ public class KitApi {
 				return name;
 			}
 		}
-		return null;
+		return defaultKit.get(group);
 	}
 
 	public static Kit getSelectedKit(Player player, String group) {
 		String name = getSelectedKitName(player, group);
-		return name != null ? getKit(group, name) : null;
+		return getKit(group, name);
 	}
 
 	public static void setSelectedKit(Player player, String group, String kit) {
@@ -104,7 +109,7 @@ public class KitApi {
 
 	public static boolean isUnlocked(String group, String kit, Player player) {
 		String id = kitUnlockId.get(group);
-		if (id == null)
+		if (id == null || defaultKit.get(group).equals(kit))
 			return true;
 		ConfigurationSection sec = DataManager.getData(player, id);
 		return sec.getBoolean(group + "." + kit, false);
@@ -166,13 +171,15 @@ public class KitApi {
 	public static void openShop(Player player, String kitGroup) {
 		List<ShopItem> list = new ArrayList<ShopItem>();
 		for (Kit kit : getKits(kitGroup)) {
+			if(kit.getName().equals(defaultKit.get(kitGroup))) continue;
+			
 			if (isUnlocked(kitGroup, kit.getName(), player)) {
 				list.add(new ShopItem(new GuiItem(Material.GREEN_STAINED_GLASS_PANE,
 						kit.getDisplayName(player) + "  " + ChatColor.GREEN + "   ("
 								+ LanguageApi.getTranslation(player, PixelLangKeys.BOUGHT) + ")",
 						kit.getLore(player)).getItem()));
 			} else {
-				list.add(new ShopItem(kit.getDisplayItem(player, false, false), 20, new ShopRunnable() {
+				list.add(new ShopItem(kit.getDisplayItem(player, false, false), kit.getCost(), new ShopRunnable() {
 					@Override
 					public void unlock(Player player) {
 						player.sendMessage(ChatColor.GREEN + LanguageApi.getTranslation(player, PixelLangKeys.BOUGHT) + ": " + kit.getDisplayName(player));

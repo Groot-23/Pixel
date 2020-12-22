@@ -8,6 +8,8 @@ import org.bukkit.World;
 import org.bukkit.craftbukkit.libs.org.apache.commons.io.FileUtils;
 import org.bukkit.entity.Player;
 
+import me.groot_23.pixel.Pixel;
+
 public class WorldUtil {
 	
 	public static File getWorldFolder(String name) {
@@ -20,7 +22,7 @@ public class WorldUtil {
 	
 	public static void unloadWorld(World world) {
 		for(Player player : world.getPlayers()) {
-			player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
+			Pixel.lobby(player);
 		}
 		Bukkit.unloadWorld(world, false);
 	}
@@ -38,7 +40,7 @@ public class WorldUtil {
 			try {
 				FileUtils.deleteDirectory(getWorldFolder(name));
 			} catch (IOException e) {
-				System.err.println("[MinG] ERROR: unable to delete world folder: " + name);
+				Pixel.getPlugin().getLogger().warning("unable to delete world folder: " + name);
 				e.printStackTrace();
 			}
 		}
@@ -50,11 +52,11 @@ public class WorldUtil {
 				FileUtils.copyDirectory(getWorldFolder(src), getWorldFolder(dst));
 				new File(getWorldFolder(dst), "uid.dat").delete();
 			} catch (IOException e) {
-				System.err.println("[MinG] ERROR: unable to copy world from '" + src + "' to " + dst);
+				Pixel.getPlugin().getLogger().warning("unable to copy world from '" + src + "' to " + dst);
 				e.printStackTrace();
 			}
 		} else {
-			System.err.println("[MinG] ERROR: world to copy does not exist: " + src);
+			Pixel.getPlugin().getLogger().warning("world to copy does not exist: " + src);
 		}
 	}
 	

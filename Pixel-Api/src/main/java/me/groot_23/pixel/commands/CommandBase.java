@@ -14,7 +14,8 @@ public abstract class CommandBase implements CommandExecutor, TabCompleter {
 	public CommandBase(JavaPlugin plugin, String name, String permission) {
 		plugin.getCommand(name).setExecutor(this);
 		plugin.getCommand(name).setTabCompleter(this);
-		plugin.getCommand(name).setPermission(permission);
+		if(permission != null)
+			plugin.getCommand(name).setPermission(permission);
 	}
 	
 	@Override

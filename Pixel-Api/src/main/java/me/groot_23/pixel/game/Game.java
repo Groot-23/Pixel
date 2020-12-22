@@ -2,16 +2,22 @@ package me.groot_23.pixel.game;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.bukkit.World;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -26,7 +32,7 @@ public abstract class Game {
 	public Arena arena;
 	public final JavaPlugin plugin;
 	
-	public final String option;
+	public final String map;
 	public final String name;
 	
 	public final GameTaskManager taskManager;
@@ -37,15 +43,16 @@ public abstract class Game {
 	private static int currentID = 0;
 
 	
-	public Game(String name, String option, JavaPlugin plugin, int teamSize) {
+	public Game(String name, String map, JavaPlugin plugin) {
 		this.id = currentID++;
 		this.plugin = plugin;
 		this.allowJoin = true;
 		this.name = name;
-		this.option = option;
+		this.map = map;
 		taskManager = new GameTaskManager();
 	}
 	
+	public int getMaxPlayers() {return arena.getMaxPlayers();}
 	
 	protected boolean allowJoin;
 	public final List<Player> players = new ArrayList<Player>();
@@ -73,6 +80,10 @@ public abstract class Game {
 		Pixel.GameProvider.stopGame(this);
 	}
 	
+	/*
+	 * Event redirects
+	 */
+	
 	public void onJoin(Player player) {}
 	
 	public void onDeath(PlayerDeathEvent event) {}
@@ -81,6 +92,8 @@ public abstract class Game {
 	
 	public void onPlayerLeave(Player player) {
 		players.remove(player);
+		teamHandler.removePlayer(player);
+		PlayerUtil.resetPlayer(player);
 	}
 	
 	public void onBlockPlace(BlockPlaceEvent event) {}
@@ -92,6 +105,21 @@ public abstract class Game {
 	public void onInteract(PlayerInteractEvent event) {}
 	public void onInteractEntity(PlayerInteractEntityEvent event) {}
 	public void onInteractAtEntity(PlayerInteractAtEntityEvent event) {}
+	
+	public void onItemConsume(PlayerItemConsumeEvent event) {}
+	
+	public void onInventoryOpen(InventoryOpenEvent event) {}
+	public void onInventoryClose(InventoryCloseEvent event) {}
+	public void onInventoryClick(InventoryClickEvent event) {}
+	
+	/**
+	 * Listener to prevent natural mob spawning in games. If want to allow natural spawning you will have to overwrite this method
+	 */
+	public void onCreatureSpawn(CreatureSpawnEvent event) {
+		if(event.getSpawnReason() == SpawnReason.NATURAL) {
+			event.setCancelled(true);
+		}
+	}
 	
 	public void onEnd() {
 		for(Player p : players) {

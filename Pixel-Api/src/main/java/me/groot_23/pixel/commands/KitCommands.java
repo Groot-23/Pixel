@@ -15,7 +15,6 @@ import org.bukkit.craftbukkit.libs.org.apache.commons.io.FilenameUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import me.groot_23.pixel.Pixel;
 import me.groot_23.pixel.kits.Kit;
 import me.groot_23.pixel.kits.KitApi;
 import me.groot_23.pixel.language.LanguageFolder;

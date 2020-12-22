@@ -6,12 +6,14 @@ depend: [NBTAPI]
 api-version: 1.14
 
 commands:
-  mjoin:
-    usage: /<command> <game> <option>
+  pjoin:
+    usage: /<command> <game> <map>
   toggle_spectator:
     usage: /<command>
-  mdata:
+  pdata:
     usage: /<command> <player> <data id> [list | get | set] <key> <value>
-  mkit_unlock:
+  pkit_unlock:
     usage: /<command> <player> <group> <kit> [get | set] <true | false>
+  psign:
+    usage: /<command> <sign_type> <game> <map>
   

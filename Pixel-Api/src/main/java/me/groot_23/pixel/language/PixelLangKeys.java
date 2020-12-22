@@ -21,4 +21,6 @@ public class PixelLangKeys {
 	public static final String PRICE		= "shop.price";
 	public static final String CREDIT		= "shop.credit";
 	public static final String REMAINING	= "shop.remaining";
+	
+	public static final String CMD_PLAYER_ONLY = "command.player_only";
 }

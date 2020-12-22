@@ -1,1 +1,3 @@
 default_language: de_de
+# The command of your lobby plugin to teleport to lobby
+lobby: lobby

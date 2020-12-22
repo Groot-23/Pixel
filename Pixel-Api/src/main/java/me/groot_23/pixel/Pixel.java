@@ -10,23 +10,22 @@ import java.util.Random;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.WorldType;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import me.groot_23.pixel.display.JoinSignApi;
 import me.groot_23.pixel.game.Game;
 import me.groot_23.pixel.game.GameCreator;
 import me.groot_23.pixel.gui.GuiItem;
-import me.groot_23.pixel.gui.GuiRunnable;
 import me.groot_23.pixel.gui.GuiItem.UseAction;
 import me.groot_23.pixel.gui.runnables.SpectatorTpRunnable;
 import me.groot_23.pixel.language.LanguageApi;
@@ -46,6 +45,7 @@ public class Pixel {
 	private static Map<UUID, Boolean> spectators;
 	private static int time;
 	private static Random random = new Random();
+	private static String lobbyCmd;
 	
 	static void init(JavaPlugin plugin) {
 		Pixel.plugin = plugin;
@@ -54,13 +54,22 @@ public class Pixel {
 		LanguageApi.defaultLanguage = plugin.getConfig().getString("default_language", "en_us");
 		LanguageApi.addLanguageFolder(new File(plugin.getDataFolder(), "lang/minecraft"));
 		LanguageApi.addLanguageFolder(new File(plugin.getDataFolder(), "lang/pixel"));
-		WorldProvider.cleanWorldFolders();
+		lobbyCmd = plugin.getConfig().getString("lobby", "lobby");
 		time = 0;
 		new BukkitRunnable() {
 			public void run() {
 				++time;
 			}
 		}.runTaskTimer(plugin, 1, 1);
+		
+		JoinSignApi.init();
+		new BukkitRunnable() {
+			public void run() {
+				JoinSignApi.updateSigns();
+			}
+		}.runTaskTimer(plugin, 100, 10);
+		
+		WorldProvider.cleanWorldFolders();
 	}
 	
 	public static JavaPlugin getPlugin() {
@@ -145,6 +154,16 @@ public class Pixel {
 	public static class GameProvider {
 		public static final Map<String, Map<String, Game>> currentGames = new HashMap<String, Map<String,Game>>();
 		private static Map<String, GameCreator> gameCreators = new HashMap<String, GameCreator>();
+		private static Map<String, Map<String, Integer>> maxPlayers = new HashMap<String, Map<String,Integer>>();
+		
+		public static int getPlayerCount(String game, String map) {
+			Game g = currentGames.get(game).get(map);
+			return g == null ? 0 : g.players.size();
+		}
+		public static int getMaxPlayers(String game, String map) {
+			Integer i = maxPlayers.get(game).get(map);
+			return i == null ? 0 : i;
+		}
 		
 		public static enum ProvideType {
 			
@@ -186,20 +205,20 @@ public class Pixel {
 			}
 		}
 
-		public static Game provideGame(String game, String option) {
+		public static Game provideGame(String game, String map) {
 			if(!currentGames.containsKey(game)) {
 				plugin.getLogger().warning("Can not provide the unregistered game '" + game + "'");
 				return null;
 			}
 			Map<String, Game> games = currentGames.get(game);
-			if(!games.containsKey(option)) {
-				plugin.getLogger().warning("Can not provide the game '" + game + "' with unregistered option '" + option + "'");
+			if(!games.containsKey(map)) {
+				plugin.getLogger().warning("Can not provide the game '" + game + "' with unregistered map '" + map + "'");
 				return null;
 			}
-			Game g = games.get(option);
+			Game g = games.get(map);
 			if(g == null) {
-				g = gameCreators.get(game).createGame(option);
-				games.put(option, g);
+				g = gameCreators.get(game).createGame(map);
+				games.put(map, g);
 			}
 			return g;
 		}
@@ -211,22 +230,22 @@ public class Pixel {
 			}
 			Map<String, Game> games = currentGames.get(game);
 			if(games.size() == 0) {
-				plugin.getLogger().warning("Can not provide the game '" + game + "' without any registered option");
+				plugin.getLogger().warning("Can not provide the game '" + game + "' without any registered map");
 				return null;
 			}
-			String option = type.chooseOption(games);
-			Game g = games.get(option);
+			String map = type.chooseOption(games);
+			Game g = games.get(map);
 			if(g == null) {
-				g = gameCreators.get(game).createGame(option);
-				games.put(option, g);
+				g = gameCreators.get(game).createGame(map);
+				games.put(map, g);
 			}
 			return g;
 		}
 			
 		public static void stopJoin(Game game) {
-			Game current = currentGames.get(game.name).get(game.option);
+			Game current = currentGames.get(game.name).get(game.map);
 			if(game == current) {
-				currentGames.get(game.name).put(game.option, null);
+				currentGames.get(game.name).put(game.map, null);
 			}
 		}
 		
@@ -236,17 +255,19 @@ public class Pixel {
 		}
 	}
 
-	public static void registerGameOption(String game, String option) {
+	public static void registerGameMap(String game, String map, int maxPlayers) {
 		if(!GameProvider.currentGames.containsKey(game)) {
-			plugin.getLogger().warning("Can not register option for the unregistered game '" + game + "'");
+			plugin.getLogger().warning("Can not register map for the unregistered game '" + game + "'");
 			return;
 		}
-		GameProvider.currentGames.get(game).put(option, null);
+		GameProvider.currentGames.get(game).put(map, null);
+		GameProvider.maxPlayers.get(game).put(map, maxPlayers);
 	}
 	
 	public static void registerGame(String name, GameCreator creator) {
 		GameProvider.gameCreators.put(name, creator);
 		GameProvider.currentGames.put(name, new HashMap<String, Game>());
+		GameProvider.maxPlayers.put(name, new HashMap<String, Integer>());
 	}
 	
 	
@@ -271,7 +292,7 @@ public class Pixel {
 				}
 			}
 		} else {
-			player.setAllowFlight(false);
+			player.setAllowFlight(player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR);
 			player.setCollidable(true);
 			player.setInvulnerable(false);
 			player.removePotionEffect(PotionEffectType.INVISIBILITY);
@@ -300,6 +321,13 @@ public class Pixel {
 		return time;
 	}
 	
+	
+	/**
+	 * Teleport player to lobby. Lobby Command has to be set in Pixel's config (lobby: "myCmd")
+	 */
+	public static void lobby(Player player) {
+		player.performCommand(lobbyCmd);
+	}
 	
 	/*
 	 * Vault wrapper:

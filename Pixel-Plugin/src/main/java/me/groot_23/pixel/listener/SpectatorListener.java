@@ -1,6 +1,5 @@
 package me.groot_23.pixel.listener;
 
-import org.apache.logging.log4j.core.net.Priority;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -12,10 +11,12 @@ import org.bukkit.event.block.BlockCanBuildEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
+import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupArrowEvent;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.BoundingBox;
 
 import me.groot_23.pixel.Pixel;
@@ -82,6 +83,16 @@ public class SpectatorListener implements Listener {
 	public void onInteractEntity(PlayerInteractEntityEvent event) {
 		if(Pixel.isSpectator(event.getPlayer())) {
 			event.setCancelled(true);
+		}
+	}
+	
+	@EventHandler(priority=EventPriority.HIGHEST)
+	public void onEffect(EntityPotionEffectEvent event) {
+		if(event.getEntity() instanceof Player) {
+			Player p = (Player) event.getEntity();
+			if(Pixel.isSpectator(p) && !event.getModifiedType().equals(PotionEffectType.INVISIBILITY)) {
+				event.setCancelled(true);
+			}
 		}
 	}
 	

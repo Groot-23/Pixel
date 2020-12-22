@@ -11,7 +11,6 @@ import org.bukkit.inventory.ItemStack;
 
 import de.tr7zw.nbtapi.NBTItem;
 import de.tr7zw.nbtapi.NBTList;
-import me.groot_23.pixel.Pixel;
 import me.groot_23.pixel.gui.GuiItem;
 import me.groot_23.pixel.gui.GuiItem.UseAction;
 

@@ -7,7 +7,7 @@ general:
   exit: Exit
   death: "&7The player %s has died!"
   join:  "&8[&a&l+&8] &7The player %s joined the game."
-  leave: "&8[&a&l-&8] &7The player %s left the game."
+  leave: "&8[&c&l-&8] &7The player %s left the game."
 
 kit:
   selector: "&d&lKit &6&lSelector"
@@ -20,3 +20,6 @@ shop:
   price: price
   credit: credit
   remaining: remaining
+
+command:
+  player_only: "&cOnly players can use this command!"

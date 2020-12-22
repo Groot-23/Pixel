@@ -23,12 +23,7 @@ public class LanguageApi {
 		return langHolder;
 	}
 	
-	/**
-	 * 
-	 * @param index Use 1 to get your LangHolder and 0 to get MinG's (if you don't change it in
-	 *  {@link me.groot_23.ming.MiniGame#init() Minigame#init})
-	 * @return
-	 */
+
 	public static LanguageFolder getLanguageHolder(int index) {
 		return langFolders.get(index);
 	}

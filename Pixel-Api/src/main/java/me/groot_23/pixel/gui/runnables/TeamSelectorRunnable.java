@@ -7,7 +7,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import de.tr7zw.nbtapi.NBTItem;
 import me.groot_23.pixel.Pixel;
 import me.groot_23.pixel.game.Game;
 import me.groot_23.pixel.gui.GuiItem;

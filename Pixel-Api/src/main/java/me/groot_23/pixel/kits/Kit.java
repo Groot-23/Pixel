@@ -18,6 +18,7 @@ import me.groot_23.pixel.util.SlotItem;
 
 public class Kit {
 	
+	private double cost;
 	private List<SlotItem> items;
 	private String group;
 	private String name;
@@ -28,11 +29,16 @@ public class Kit {
 				+ LanguageApi.getTranslation(player, "kit.selected") + ChatColor.GRAY + ")";
 	}
 	
-	public Kit(String group, String name, Material material, List<SlotItem> items) {
+	public Kit(String group, String name, Material material, List<SlotItem> items, double cost) {
 		this.group = group;
 		this.name = name;
 		this.material = material;
 		this.items = items;
+		this.cost = cost;
+	}
+	
+	public double getCost() {
+		return cost;
 	}
 	
 	public String getName() {
@@ -104,10 +110,12 @@ public class Kit {
 			}
 		}
 		
-		Kit kit = new Kit(group, section.getName(), material, kitItems);
-		KitApi.registerKit(kit, group);
-		return kit;
+		double cost = section.getDouble("cost", 100);
 		
+		Kit kit = new Kit(group, section.getName(), material, kitItems, cost);
+		KitApi.registerKit(kit, group);
+		if(section.getBoolean("default", false)) KitApi.setDefault(group, section.getName());
+		return kit;
 	}
 	
 	public static void serializeInventory(Player player, ConfigurationSection section) {

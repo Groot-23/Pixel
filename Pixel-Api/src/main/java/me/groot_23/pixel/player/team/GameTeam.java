@@ -43,10 +43,12 @@ public class GameTeam {
 	public void addPlayer(Player player) {
 		players.add(player);
 		updateScoreboardTeams();
-		player.setMetadata("ming_team", new FixedMetadataValue(Pixel.getPlugin(), color.name().toLowerCase()));
+		player.setMetadata("pixel_team", new FixedMetadataValue(Pixel.getPlugin(), color.name().toLowerCase()));
 	}
 
 	public void removePlayer(Player player) {
+		if(!players.contains(player)) return;
+		
 		for (Player p : players) {
 			Team team = p.getScoreboard().getTeam(SCOREBOARD_TEAM_NAME);
 			if(team != null) {
@@ -111,7 +113,7 @@ public class GameTeam {
 	}
 	
 	public static DyeColor getTeamOfPlayer(Player player) {
-		List<MetadataValue> values = player.getMetadata("ming_team");
+		List<MetadataValue> values = player.getMetadata("pixel_team");
 		if(values != null) {
 			for(MetadataValue val : values) {
 				if(val.getOwningPlugin() == Pixel.getPlugin()) {

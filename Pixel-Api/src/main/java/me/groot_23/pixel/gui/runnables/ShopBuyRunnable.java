@@ -4,7 +4,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import de.tr7zw.nbtapi.NBTItem;
 import me.groot_23.pixel.Pixel;
 import me.groot_23.pixel.gui.GuiRunnable;
 import me.groot_23.pixel.shop.ShopItem;
