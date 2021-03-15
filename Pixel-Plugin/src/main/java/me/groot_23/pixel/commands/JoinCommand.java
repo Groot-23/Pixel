@@ -11,7 +11,7 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import me.groot_23.pixel.Pixel;
-import me.groot_23.pixel.game.Game;
+import me.groot_23.pixel.game.Lobby;
 
 public class JoinCommand implements CommandExecutor, TabCompleter {
 
@@ -19,15 +19,15 @@ public class JoinCommand implements CommandExecutor, TabCompleter {
 	public List<String> onTabComplete(CommandSender sender, Command arg1, String arg2, String[] args) {
 		List<String> list = new ArrayList<String>();
 		if(args.length == 1) {
-			for(String s : Pixel.GameProvider.currentGames.keySet()) {
+			for(String s : Pixel.LobbyProvider.currentlobbies.keySet()) {
 				if(s.startsWith(args[0])) {
 					list.add(s);
 				}
 			}
 		}
 		if(args.length == 2) {
-			if(Pixel.GameProvider.currentGames.containsKey(args[0])) {
-				for(String s : Pixel.GameProvider.currentGames.get(args[0]).keySet()) {
+			if(Pixel.LobbyProvider.currentlobbies.containsKey(args[0])) {
+				for(String s : Pixel.LobbyProvider.currentlobbies.get(args[0]).keySet()) {
 					if(s.startsWith(args[1])) {
 						list.add(s);
 					}
@@ -44,15 +44,15 @@ public class JoinCommand implements CommandExecutor, TabCompleter {
 			return true;
 		}
 		Player player = (Player)sender;
-		Game game = null;
+		Lobby lobby = null;
 		if(args.length == 1) {
-			game = Pixel.GameProvider.provideGame(args[0], Pixel.GameProvider.ProvideType.MOST_PLAYERS);
+			lobby = Pixel.LobbyProvider.provideGame(args[0], Pixel.LobbyProvider.ProvideType.MOST_PLAYERS);
 		}
 		if(args.length == 2) {
-			game = Pixel.GameProvider.provideGame(args[0], args[1]);
+			lobby = Pixel.LobbyProvider.provideLobby(args[0], args[1]);
 		}
-		if(game != null) {
-			game.joinPlayer(player);
+		if(lobby != null) {
+			lobby.join(player);
 			return true;
 		}
 		sender.sendMessage(ChatColor.RED + "Invalid Game!");

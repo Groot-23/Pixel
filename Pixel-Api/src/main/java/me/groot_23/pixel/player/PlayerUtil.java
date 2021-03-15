@@ -55,10 +55,11 @@ public class PlayerUtil {
 	
 	public static void clear(Player player) {
 		player.getInventory().clear();
+		
 		player.setAbsorptionAmount(0);
 		for (PotionEffect effect : player.getActivePotionEffects()) {
 			player.removePotionEffect(effect.getType());
-			player.addPotionEffect(new PotionEffect(effect.getType(), 1, 0, false, false));
+//			player.addPotionEffect(new PotionEffect(effect.getType(), 1, 0, false, false));
 		}
 		for(Attribute att : playerAttributes) {
 			AttributeInstance instance = player.getAttribute(att);

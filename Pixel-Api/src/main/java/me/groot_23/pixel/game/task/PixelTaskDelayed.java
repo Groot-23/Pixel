@@ -3,29 +3,17 @@ package me.groot_23.pixel.game.task;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import me.groot_23.pixel.Pixel;
-import me.groot_23.pixel.game.Game;
 
-public abstract class GameTaskDelayed {
+public abstract class PixelTaskDelayed {
 	
 	private long start;
 	private long end;
 	private BukkitRunnable runnable;
-	private boolean active;
+	private long delay;
 	
-	protected Game game;
-	protected long delay;
 	
-	public GameTaskDelayed(Game game, long delay) {
-		this.game = game;
-		this.delay = delay;
-		this.active = false;
-		runnable = new BukkitRunnable() {
-			@Override
-			public void run() {
-				GameTaskDelayed.this.run();
-				active = false;
-			}
-		};
+	public PixelTaskDelayed() {
+		runnable = null;
 	}
 	
 	public long getRemainingTicks() {
@@ -48,32 +36,35 @@ public abstract class GameTaskDelayed {
 	}
 	
 	public void start(long delay) {
-		active = true;
+		// create new runnable as it's not allowed to rerun the same instance
+		runnable = new BukkitRunnable() {
+			@Override
+			public void run() {
+				PixelTaskDelayed.this.run();
+			}
+		};
+		
+		this.delay = delay;
 		start = Pixel.getTime();
 		end = start + delay;
-		runnable.runTaskLater(game.plugin, delay);
-	}
-	public void start() {
-		start(delay);
+		runnable.runTaskLater(Pixel.getPlugin(), delay);
 	}
 	
 	public void cancel() {
-		if(active) {
-			active = false;
+		if(isActive()) {
 			runnable.cancel();
+			runnable = null;
 		}
 	}
 	
 	public void restart(long delay) {
+		this.delay = delay;
 		cancel();
 		start(delay);
 	}
-	public void restart() {
-		restart(delay);
-	}
 	
 	public void runTaskEarly() {
-		if(active) {
+		if(isActive()) {
 			cancel();
 			run();
 		}
@@ -81,6 +72,10 @@ public abstract class GameTaskDelayed {
 	
 	public long getDelay() {
 		return delay;
+	}
+	
+	public boolean isActive() {
+		return runnable != null;
 	}
 	
 	public abstract void run();

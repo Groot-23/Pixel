@@ -27,15 +27,15 @@ import org.bukkit.projectiles.ProjectileSource;
 import me.groot_23.pixel.Pixel;
 import me.groot_23.pixel.game.Game;
 import me.groot_23.pixel.player.PlayerUtil;
-import me.groot_23.pixel.world.Arena;
+import me.groot_23.pixel.world.GameWorld;
+import me.groot_23.pixel.world.LobbyWorld;
 
 public class GameListener implements Listener{
 
-	
 	public Game getGame(World world) {
-		Arena arena = Pixel.getArena(world.getUID());
+		GameWorld arena = Pixel.getArena(world.getUID());
 		if(arena != null) {
-			return arena.getGame();
+			return arena.game;
 		}
 		return null;
 	}
@@ -62,6 +62,9 @@ public class GameListener implements Listener{
 		 if(game != null) {
 			 game.onPlayerLeave(event.getPlayer());
 		 }
+		 
+		LobbyWorld lobby = Pixel.getLobby(event.getPlayer().getWorld().getUID());
+		if(lobby != null) lobby.lobby.onLeave(event.getPlayer());
 	}
 	
 	@EventHandler
@@ -71,6 +74,10 @@ public class GameListener implements Listener{
 		if(from != null && from != to) {
 			from.onPlayerLeave(event.getPlayer());
 		}
+		
+		// if game has not started and player leaves
+		LobbyWorld lobby = Pixel.getLobby(event.getFrom().getUID());
+		if(lobby != null) lobby.lobby.onLeave(event.getPlayer());
 	}
 	
 	@EventHandler

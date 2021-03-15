@@ -8,6 +8,7 @@ general:
   death: "&7Der Spieler %s ist gestorben!"
   join:  "&8[&a&l+&8] &7Der Spieler %s hat das Spiel betreten."
   leave: "&8[&c&l-&8] &7Der Spieler %s hat das Spiel verlassen."
+  more_coins: "&7Du erhälst &e&l%s&7!"
 
 kit:
   selector: '&d&lKit &6&lAuswahl'
@@ -23,3 +24,9 @@ shop:
 
 command:
   player_only: "&cNur Spieler können diesen Befehl verwenden!"
+
+selector:
+  kit_shop: "&e&lKit &7- &e&lShop &7(Rechtsklick)"
+  team: "&a&lTeam auswählen &7(Rechtsklick)"
+  kit: "&e&lKit auswählen &7(Rechtsklick)"
+  team_selected: "&7Du bist nun in Team %s"

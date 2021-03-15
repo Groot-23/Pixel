@@ -15,6 +15,8 @@ import org.bukkit.inventory.Inventory;
 
 import me.groot_23.pixel.gui.GuiItem;
 import me.groot_23.pixel.gui.runnables.TeamSelectorRunnable;
+import me.groot_23.pixel.language.LanguageApi;
+import net.md_5.bungee.api.ChatColor;
 
 public class TeamHandler {
 
@@ -24,15 +26,24 @@ public class TeamHandler {
 	public final int numTeams;
 	public final int teamSize;
 	
+	/**
+	 * Prefix of chat message after selecting team
+	 */
+	public String chatPrefix = "";
+	
 	public TeamHandler(int numTeams, int teamSize) {
-		this(numTeams, teamSize, new DyeColor[] {DyeColor.GREEN, DyeColor.YELLOW, DyeColor.RED, DyeColor.BLUE, DyeColor.ORANGE,
-				DyeColor.LIGHT_BLUE, DyeColor.LIME, DyeColor.PURPLE, DyeColor.CYAN, DyeColor.MAGENTA});
+		this(numTeams, teamSize, false, true);
 	}
 	
-	public TeamHandler(int numTeams, int teamSize, DyeColor[] colors) {
+	public TeamHandler(int numTeams, int teamSize, boolean friendlyFire, boolean colorVisible) {
+		this(numTeams, teamSize, new DyeColor[] {DyeColor.GREEN, DyeColor.YELLOW, DyeColor.RED, DyeColor.BLUE, DyeColor.ORANGE,
+				DyeColor.LIGHT_BLUE, DyeColor.LIME, DyeColor.PURPLE, DyeColor.CYAN, DyeColor.MAGENTA}, friendlyFire, colorVisible);
+	}
+	
+	public TeamHandler(int numTeams, int teamSize, DyeColor[] colors, boolean friendlyFire, boolean colorVisible) {
 		this.colors = colors;
 		for(DyeColor color : colors) {
-			teams.put(color, new GameTeam(color));
+			teams.put(color, new GameTeam(color, friendlyFire, colorVisible));
 		}
 		this.teamSelector = null;
 		this.numTeams = numTeams;
@@ -63,7 +74,7 @@ public class TeamHandler {
 		}
 	}
 	
-	public void fillTeams(List<Player> players) {
+	public void fillTeams(Collection<Player> players) {
 		GameTeam team = null;
 		int i = 0;
 		for(Player player : players) {
@@ -71,7 +82,7 @@ public class TeamHandler {
 			DyeColor color = GameTeam.getTeamOfPlayer(player);
 			if(color != null) {
 				GameTeam t = teams.get(color);
-				if(teams != null) {
+				if(t != null) {
 					alreadyInTeam = t.getPlayers().contains(player);
 				}
 			}
@@ -82,7 +93,6 @@ public class TeamHandler {
 					if(team != null) {
 						if(team.getPlayers().size() < teamSize) {
 							team.addPlayer(player);
-							break;
 						} else {
 							team = null;
 						}
@@ -153,8 +163,8 @@ public class TeamHandler {
 			for(int i = 0; i < numTeams; i++) {
 				Material wool = GameTeam.toWool(colors[i]);
 				if(wool != null) {
-					GuiItem guiItem = new GuiItem(wool);
-					guiItem.addClickRunnable(new TeamSelectorRunnable(colors[i]));
+					GuiItem guiItem = new GuiItem(wool, ChatColor.RESET + "Team " + GameTeam.toChatColor(colors[i]) + LanguageApi.translateColorDefault(colors[i]));
+					guiItem.addClickRunnable(new TeamSelectorRunnable(colors[i], this)); // TODO UUID for TeamHandler
 					teamSelector.setItem(i, guiItem.getItem());
 				}
 

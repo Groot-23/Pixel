@@ -23,9 +23,16 @@ public class GameTeam {
 
 	private DyeColor color;
 	private List<Player> players = new ArrayList<Player>();
+	private boolean friendlyFire, colorVisible;
 
 	public GameTeam(DyeColor color) {
+		this(color, false, true);
+	}
+	
+	public GameTeam(DyeColor color, boolean friendlyFire, boolean colorVisible) {
 		this.color = color;
+		this.friendlyFire = friendlyFire;
+		this.colorVisible = colorVisible;
 	}
 	
 	public DyeColor getColor() {
@@ -108,8 +115,10 @@ public class GameTeam {
 	}
 
 	private void initTeamData(Team team) {
-		team.setAllowFriendlyFire(false);
-		team.setPrefix(toChatColor(color) + "[" + LanguageApi.translateColorDefault(color) + "] "); 
+		team.setAllowFriendlyFire(friendlyFire);
+		if(colorVisible) {
+			team.setPrefix(toChatColor(color) + "[" + LanguageApi.translateColorDefault(color) + "] "); 
+		}
 	}
 	
 	public static DyeColor getTeamOfPlayer(Player player) {

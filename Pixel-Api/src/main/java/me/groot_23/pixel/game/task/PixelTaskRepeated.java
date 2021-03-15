@@ -2,18 +2,19 @@ package me.groot_23.pixel.game.task;
 
 import org.bukkit.scheduler.BukkitRunnable;
 
-import me.groot_23.pixel.game.Game;
+import me.groot_23.pixel.Pixel;
 
-public abstract class GameTaskRepeated {
+public abstract class PixelTaskRepeated {
 	private long tickRate;
 	private BukkitRunnable runnable;
 	
-	boolean active = true;
-	protected Game game;
-	
-	public GameTaskRepeated(Game game, long tickRate) {
-		this.game = game;
+	public PixelTaskRepeated(long tickRate) {
 		this.tickRate = tickRate;
+		runnable = null;
+	}
+	
+	public void start() {
+		// create new runnable as it's not allowed to rerun the same instance
 		runnable = new BukkitRunnable() {
 			@Override
 			public void run() {
@@ -23,26 +24,24 @@ public abstract class GameTaskRepeated {
 					// Force stop on error to prevent spamming the console with an error each tick
 					System.out.println("An error occurred while updating repeated Task:");
 					e.printStackTrace();
-					active = false;
 					cancel();
 				}
 			}
 		};
-	}
-	
-	public void start() {
-		active = true;
 		onStart();
-//		System.out.println("Started UI runnable!");
-		runnable.runTaskTimer(game.plugin, 0, tickRate);
+		runnable.runTaskTimer(Pixel.getPlugin(), 0, tickRate);
 	}
 	
 	public void stop() {
-		if(active) {
-			active = false;
+		if(isActive()) {
 			runnable.cancel();
+			runnable = null;
 			onStop();
 		}
+	}
+	
+	public boolean isActive() {
+		return runnable != null;
 	}
 	
 	protected void onStart() {}

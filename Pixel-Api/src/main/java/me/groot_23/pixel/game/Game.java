@@ -1,7 +1,6 @@
 package me.groot_23.pixel.game;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -22,62 +21,42 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.groot_23.pixel.Pixel;
-import me.groot_23.pixel.game.task.GameTaskManager;
+import me.groot_23.pixel.game.task.PixelTaskManager;
 import me.groot_23.pixel.player.PlayerUtil;
 import me.groot_23.pixel.player.team.TeamHandler;
-import me.groot_23.pixel.world.Arena;
+import me.groot_23.pixel.world.GameWorld;
+import me.groot_23.pixel.world.GameplayModifier;
+import me.groot_23.pixel.world.PixelWorld;
 
 public abstract class Game {
 	
-	public Arena arena;
-	public final JavaPlugin plugin;
+	public final GameWorld arena;
 	
-	public final String map;
 	public final String name;
 	
-	public final GameTaskManager taskManager;
+	public final PixelTaskManager taskManager;
 	
 	public TeamHandler teamHandler;
 	
 	public final int id;
 	private static int currentID = 0;
 
+	public final Set<Player> players;
 	
-	public Game(String name, String map, JavaPlugin plugin) {
-		this.id = currentID++;
+	public final JavaPlugin plugin;
+	
+	public Game(JavaPlugin plugin, String name, PixelWorld world, Set<Player> players, TeamHandler teams) {
 		this.plugin = plugin;
-		this.allowJoin = true;
+		this.id = currentID++;
 		this.name = name;
-		this.map = map;
-		taskManager = new GameTaskManager();
-	}
-	
-	public int getMaxPlayers() {return arena.getMaxPlayers();}
-	
-	protected boolean allowJoin;
-	public final List<Player> players = new ArrayList<Player>();
-	
-	public final void joinPlayer(Player player) {
-		if(allowJoin) {
-			players.add(player);
-			performJoin(player);
-			onJoin(player);
-		}
-	}
-	protected void performJoin(Player player) {
-		arena.joinPlayer(player);
-		if(players.size() >= arena.getMaxPlayers()) {
-			allowJoin = false;
-		}
-	}
-	
-	public void stopJoin() {
-		allowJoin = false;
-		Pixel.GameProvider.stopJoin(this);
+		this.players = players;
+		this.teamHandler = teams;
+		this.arena = new GameWorld(this, world);
+		taskManager = new PixelTaskManager();
 	}
 	
 	public void endGame() {
-		Pixel.GameProvider.stopGame(this);
+		onEnd();
 	}
 	
 	/*
@@ -125,6 +104,11 @@ public abstract class Game {
 		for(Player p : players) {
 			PlayerUtil.resetPlayer(p);
 		}
+		for(Player p : arena.getWorld().getPlayers()) {
+			PlayerUtil.resetPlayer(p);
+		}
+		Pixel.gameWorlds.remove(arena.getWorld().getUID());
+		GameplayModifier.remove(arena.getWorld().getUID());
 		Pixel.WorldProvider.removeWorld(arena.getWorld());
 		taskManager.removeAllTasks();
 	}

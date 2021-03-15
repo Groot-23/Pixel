@@ -7,34 +7,33 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import me.groot_23.pixel.Pixel;
-import me.groot_23.pixel.game.Game;
 import me.groot_23.pixel.gui.GuiItem;
 import me.groot_23.pixel.gui.GuiRunnable;
+import me.groot_23.pixel.language.LanguageApi;
+import me.groot_23.pixel.language.PixelLangKeys;
 import me.groot_23.pixel.player.team.GameTeam;
 import me.groot_23.pixel.player.team.TeamHandler;
 
 public class TeamSelectorRunnable implements GuiRunnable {
 
 	private DyeColor team;
+	private TeamHandler th;
 
-	public TeamSelectorRunnable(DyeColor team) {
+	public TeamSelectorRunnable(DyeColor team, TeamHandler teamHandler) {
 		this.team = team;
+		this.th = teamHandler;
 	}
 
 	@Override
 	public void run(Player player, ItemStack item, Inventory inv) {
-		Game game = Pixel.getGame(player.getWorld().getUID());
-		if (game != null) {
-			DyeColor from = GameTeam.getTeamOfPlayer(player);
-			TeamHandler th = game.teamHandler;
-			if (th.movePlayerToTeam(player, team)) {
-				if (from != null) {
-					updateColor(from, inv, th);
-				}
-				updateColor(team, inv, th);
+		DyeColor from = GameTeam.getTeamOfPlayer(player);
+		if (th.movePlayerToTeam(player, team)) {
+			if (from != null) {
+				updateColor(from, inv, th);
 			}
+			updateColor(team, inv, th);
 		}
+		player.sendMessage(th.chatPrefix + String.format(LanguageApi.getTranslation(player, PixelLangKeys.SELECTED_TEAM), GameTeam.toChatColor(team) + LanguageApi.translateColor(player, team)));
 	}
 
 	private void updateColor(DyeColor color, Inventory inv, TeamHandler th) {

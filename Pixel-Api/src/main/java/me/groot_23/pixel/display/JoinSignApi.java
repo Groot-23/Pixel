@@ -18,7 +18,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import de.tr7zw.nbtapi.NBTItem;
 import me.groot_23.pixel.Pixel;
-import me.groot_23.pixel.game.Game;
+import me.groot_23.pixel.game.Lobby;
 import me.groot_23.pixel.language.LanguageApi;
 import me.groot_23.pixel.language.PixelLangKeys;
 import me.groot_23.pixel.util.Utf8Config;
@@ -59,11 +59,13 @@ public class JoinSignApi {
 	public static void join(Location loc, Player player) {
 		if(loc.getBlock().getState() instanceof Sign) {
 			Sign sign = (Sign)loc.getBlock().getState();
+			if(!sign.hasMetadata("pixel_game") || !sign.hasMetadata("pixel_map")) return;
+			
 			String game = sign.getMetadata("pixel_game").get(0).asString();
 			String map = sign.getMetadata("pixel_map").get(0).asString();
-			Game g = Pixel.GameProvider.provideGame(game, map);
-			g.joinPlayer(player);
-			updateSign(sign);		
+			Lobby lobby = Pixel.LobbyProvider.provideLobby(game, map);
+			lobby.join(player);
+			updateSign(sign);
 		}
 	}
 	
@@ -136,13 +138,15 @@ public class JoinSignApi {
 	}
 	
 	private static void updateSign(Sign sign) {
+		if(!sign.hasMetadata("pixel_game") || !sign.hasMetadata("pixel_map")) return;
+		
 		String game = sign.getMetadata("pixel_game").get(0).asString();
 		String map = sign.getMetadata("pixel_map").get(0).asString();
 		sign.setLine(0, LanguageApi.getDefault("sign.game." + game));
 		sign.setLine(1, "");
 		sign.setLine(2, LanguageApi.getDefault("sign.map." + map));
-		int cnt = Pixel.GameProvider.getPlayerCount(game, map);
-		int max = Pixel.GameProvider.getMaxPlayers(game, map);
+		int cnt = Pixel.LobbyProvider.getPlayerCount(game, map);
+		int max = Pixel.LobbyProvider.getMaxPlayers(game, map);
 		sign.setLine(3, String.format("%d/%d " + LanguageApi.getDefault(PixelLangKeys.PLAYER), cnt, max));
 		sign.update(true);
 	}

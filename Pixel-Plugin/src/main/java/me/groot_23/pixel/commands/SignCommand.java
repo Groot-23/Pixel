@@ -8,12 +8,11 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.groot_23.pixel.Pixel;
 import me.groot_23.pixel.display.JoinSignApi;
-import me.groot_23.pixel.game.Game;
+import me.groot_23.pixel.game.Lobby;
 
 public class SignCommand extends PlayerCommand{
 
@@ -33,14 +32,14 @@ public class SignCommand extends PlayerCommand{
 			}
 		}
 		if(args.length == 2) {
-			for(String s : Pixel.GameProvider.currentGames.keySet()) {
+			for(String s : Pixel.LobbyProvider.currentlobbies.keySet()) {
 				if(s.startsWith(args[1])) {
 					list.add(s);
 				}
 			}
 		}
 		if(args.length == 3) {
-			Map<String, Game> m = Pixel.GameProvider.currentGames.get(args[1]);
+			Map<String, Lobby> m = Pixel.LobbyProvider.currentlobbies.get(args[1]);
 			if(m != null) {
 				for(String s : m.keySet()) {
 					if(s.startsWith(args[2])) {
@@ -60,7 +59,7 @@ public class SignCommand extends PlayerCommand{
 		Material material = Material.getMaterial(strMaterial);
 		if(!strMaterial.contains("SIGN") || material == null) return false;
 		String game = args[1];
-		Map<String, Game> games = Pixel.GameProvider.currentGames.get(game);
+		Map<String, Lobby> games = Pixel.LobbyProvider.currentlobbies.get(game);
 		if(args.length < 3) {
 			for(String s : games.keySet()) {
 				player.getInventory().addItem(JoinSignApi.createItem(material, game, s));

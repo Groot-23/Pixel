@@ -3,7 +3,7 @@ version: 0.3
 author: Groot_23
 main: me.groot_23.pixel.PixelPlugin
 depend: [NBTAPI]
-api-version: 1.14
+api-version: 1.16
 
 commands:
   pjoin:

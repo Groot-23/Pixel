@@ -7,6 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.ItemStack;
 
 import de.tr7zw.nbtapi.NBTItem;
@@ -46,6 +47,13 @@ public class GuiListener implements Listener {
 	@EventHandler
 	public void preventDrop(PlayerDropItemEvent event) {
 		if (isGuiItem(event.getItemDrop().getItemStack())) {
+			event.setCancelled(true);
+		}
+	}
+	
+	@EventHandler
+	public void preventSwap(PlayerSwapHandItemsEvent event) {
+		if(isGuiItem(event.getOffHandItem()) || isGuiItem(event.getMainHandItem())) {
 			event.setCancelled(true);
 		}
 	}

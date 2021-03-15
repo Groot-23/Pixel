@@ -11,9 +11,12 @@ import me.groot_23.pixel.commands.SignCommand;
 import me.groot_23.pixel.commands.ToggleSpectator;
 import me.groot_23.pixel.listener.GameListener;
 import me.groot_23.pixel.listener.GuiListener;
+import me.groot_23.pixel.listener.GameplayListener;
 import me.groot_23.pixel.listener.SignListener;
 import me.groot_23.pixel.listener.SpectatorListener;
 import me.groot_23.pixel.util.ResourceExtractor;
+
+
 
 public class PixelPlugin extends JavaPlugin {
 	
@@ -39,6 +42,8 @@ public class PixelPlugin extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(new GuiListener(), this);
 		getServer().getPluginManager().registerEvents(new SpectatorListener(), this);
 		getServer().getPluginManager().registerEvents(new SignListener(), this);
+		
+		getServer().getPluginManager().registerEvents(new GameplayListener(), this);
 	}
 	
 	private void registerCommands() {

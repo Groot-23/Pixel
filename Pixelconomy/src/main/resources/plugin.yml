@@ -3,6 +3,7 @@ version: 1.0
 author: Groot_23
 main: me.groot_23.pixel.pixelconomy.PixelconomyPlugin
 depend: [Vault]
+api-version: 1.16
 
 commands:
   pecon:
